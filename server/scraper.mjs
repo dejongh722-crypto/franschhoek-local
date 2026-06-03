@@ -18,9 +18,11 @@ import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import { SOURCES, MAX_ITEMS_PER_SOURCE } from "./sources.mjs";
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-const SERVICE_KEY = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const RAW_URL = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "").trim();
+// Be forgiving: add the scheme if it was pasted without it.
+const SUPABASE_URL = RAW_URL && !/^https?:\/\//i.test(RAW_URL) ? `https://${RAW_URL}` : RAW_URL;
+const SERVICE_KEY = (process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+const ANTHROPIC_API_KEY = (process.env.ANTHROPIC_API_KEY || "").trim();
 const MODEL = process.env.SCRAPER_MODEL || "claude-haiku-4-5-20251001";
 
 const UA =
@@ -38,7 +40,19 @@ const VALID_CATEGORIES = new Set([
 ]);
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
-  console.error("✗ Missing SUPABASE_URL / SUPABASE_SECRET_KEY — aborting.");
+  console.error(
+    `✗ Missing env — SUPABASE_URL set: ${Boolean(SUPABASE_URL)}, SUPABASE_SECRET_KEY set: ${Boolean(
+      SERVICE_KEY,
+    )}. Add both as GitHub Actions secrets.`,
+  );
+  process.exit(1);
+}
+try {
+  new URL(SUPABASE_URL);
+} catch {
+  console.error(
+    "✗ SUPABASE_URL is not a valid URL. The secret must be exactly like https://<project-ref>.supabase.co — no quotes, and not a key.",
+  );
   process.exit(1);
 }
 
