@@ -23,6 +23,7 @@ import {
   ChevronDown,
   RefreshCw,
   MessagesSquare,
+  MapPinned,
   type LucideIcon,
 } from "lucide-react";
 import { analytics, monthlyRevenue, zar } from "@/data/analytics";
@@ -34,7 +35,10 @@ import { recentUsers, formatJoined } from "@/data/users";
 import { initials } from "@/data/chat";
 import { isPromoLive, usePromotions, type Audience, type Promotion } from "@/store/promotions";
 import { useEvents } from "@/store/events";
+import { useVenues } from "@/store/venues";
 import { useDeals } from "@/store/deals";
+import { venueImage } from "@/data/venues";
+import { ImageField } from "@/components/admin/ImageField";
 import { useCommunityGroups } from "@/store/communityGroups";
 import { useToast } from "@/store/toast";
 import { supabase, type ProfileRow } from "@/lib/supabase";
@@ -416,8 +420,8 @@ export function Admin() {
                 />
               </Field>
             )}
-            <Field label="Image URL (optional)">
-              <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://…" className="input" />
+            <Field label="Photo">
+              <ImageField value={form.image} onChange={(url) => setForm({ ...form, image: url })} folder="promotions" />
             </Field>
             <button
               type="submit"
@@ -595,6 +599,9 @@ export function Admin() {
 
         {/* Manage events */}
         <EventsManager />
+
+        {/* Manage places (venues) — change photos */}
+        <VenuesManager />
 
         {/* Manage deals */}
         <DealsManager />
@@ -866,20 +873,48 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
   );
 }
 
-function ManageRow({ title, sub, onDelete }: { title: string; sub: string; onDelete: () => void }) {
+function ManageRow({
+  title,
+  sub,
+  thumb,
+  onEdit,
+  onDelete,
+}: {
+  title: string;
+  sub: string;
+  thumb?: string;
+  onEdit?: () => void;
+  onDelete?: () => void;
+}) {
   return (
     <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-black/5">
+      {thumb !== undefined && (
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-sand ring-1 ring-black/5">
+          {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" />}
+        </div>
+      )}
       <div className="min-w-0 flex-1">
         <div className="truncate text-sm font-semibold text-ink">{title}</div>
         <div className="truncate text-[11px] text-muted">{sub}</div>
       </div>
-      <button
-        aria-label="Delete"
-        onClick={onDelete}
-        className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-red-50 hover:text-red-500"
-      >
-        <Trash2 className="h-4 w-4" strokeWidth={2} />
-      </button>
+      {onEdit && (
+        <button
+          aria-label="Edit"
+          onClick={onEdit}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-wine/10 hover:text-wine"
+        >
+          <Pencil className="h-4 w-4" strokeWidth={2} />
+        </button>
+      )}
+      {onDelete && (
+        <button
+          aria-label="Delete"
+          onClick={onDelete}
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-red-50 hover:text-red-500"
+        >
+          <Trash2 className="h-4 w-4" strokeWidth={2} />
+        </button>
+      )}
     </div>
   );
 }
@@ -890,7 +925,7 @@ const FALLBACK_DEAL_IMG =
   "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=800&q=70";
 
 function EventsManager() {
-  const { events, addEvent, removeEvent } = useEvents();
+  const { events, addEvent, updateEvent, removeEvent } = useEvents();
   const toast = useToast();
   const empty = {
     title: "",
@@ -904,14 +939,36 @@ function EventsManager() {
     hasChat: false,
   };
   const [form, setForm] = useState(empty);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const startEdit = (ev: (typeof events)[number]) => {
+    setEditingId(ev.id);
+    setForm({
+      title: ev.title,
+      venue: ev.venue,
+      categorySlug: ev.categorySlug || categories[0].slug,
+      date: ev.date?.slice(0, 16) || "",
+      price: ev.price,
+      image: ev.image,
+      description: ev.description,
+      isPremium: ev.isPremium,
+      hasChat: ev.hasChat,
+    });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(empty);
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) return toast("Add an event title");
-    if (!form.date) return toast("Pick a date & time");
+    if (!editingId && !form.date) return toast("Pick a date & time");
     setSaving(true);
-    const { error } = await addEvent({
+    const payload = {
       title: form.title.trim(),
       venue: form.venue.trim(),
       categorySlug: form.categorySlug,
@@ -921,10 +978,12 @@ function EventsManager() {
       price: form.price.trim() || "Free",
       hasChat: form.hasChat,
       description: form.description.trim(),
-    });
+    };
+    const { error } = editingId ? await updateEvent(editingId, payload) : await addEvent(payload);
     setSaving(false);
     if (error) return toast(error);
-    toast("Event added");
+    toast(editingId ? "Event updated" : "Event added");
+    setEditingId(null);
     setForm(empty);
   };
 
@@ -958,8 +1017,8 @@ function EventsManager() {
             <input className="input" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="R250 or Free" />
           </Field>
         </div>
-        <Field label="Image URL (optional)">
-          <input className="input" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://…" />
+        <Field label="Photo">
+          <ImageField value={form.image} onChange={(url) => setForm({ ...form, image: url })} folder="events" />
         </Field>
         <Field label="Description">
           <textarea rows={3} className="input resize-none" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What's the event about?" />
@@ -968,10 +1027,17 @@ function EventsManager() {
           <Toggle label="Premium only" checked={form.isPremium} onChange={(v) => setForm({ ...form, isPremium: v })} />
           <Toggle label="Has community chat" checked={form.hasChat} onChange={(v) => setForm({ ...form, hasChat: v })} />
         </div>
-        <button type="submit" disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-full bg-wine py-3 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
-          <Plus className="h-4 w-4" strokeWidth={2.5} />
-          {saving ? "Adding…" : "Add event"}
-        </button>
+        <div className="flex gap-2">
+          {editingId && (
+            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+              Cancel
+            </button>
+          )}
+          <button type="submit" disabled={saving} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-wine py-3 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+            {saving ? "Saving…" : editingId ? "Save changes" : "Add event"}
+          </button>
+        </div>
       </form>
 
       <div className="mt-3 space-y-2">
@@ -980,12 +1046,69 @@ function EventsManager() {
             key={ev.id}
             title={ev.title}
             sub={`${ev.venue} · ${ev.date ? formatEventDate(ev.date) : "no date"}`}
+            thumb={ev.image}
+            onEdit={() => startEdit(ev)}
             onDelete={async () => {
               const { error } = await removeEvent(ev.id);
               if (error) toast(error);
             }}
           />
         ))}
+      </div>
+    </Collapsible>
+  );
+}
+
+function VenuesManager() {
+  const { venues, updateVenue } = useVenues();
+  const toast = useToast();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [image, setImage] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const save = async (id: string) => {
+    setSaving(true);
+    const { error } = await updateVenue(id, { image: image.trim() });
+    setSaving(false);
+    if (error) return toast(error);
+    toast("Photo updated");
+    setEditingId(null);
+  };
+
+  return (
+    <Collapsible icon={MapPinned} title={`Places (${venues.length})`} subtitle="Change the photo shown for any place.">
+      <div className="space-y-2">
+        {venues.map((v) => {
+          const catName = categories.find((c) => c.slug === v.categorySlug)?.name ?? v.categorySlug;
+          if (editingId === v.id) {
+            return (
+              <div key={v.id} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                <div className="text-sm font-semibold text-ink">{v.name}</div>
+                <ImageField value={image} onChange={setImage} folder="venues" />
+                <div className="flex gap-2">
+                  <button onClick={() => setEditingId(null)} className="rounded-full px-4 py-2 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+                    Cancel
+                  </button>
+                  <button onClick={() => save(v.id)} disabled={saving} className="flex-1 rounded-full bg-wine py-2 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
+                    {saving ? "Saving…" : "Save photo"}
+                  </button>
+                </div>
+              </div>
+            );
+          }
+          return (
+            <ManageRow
+              key={v.id}
+              title={v.name}
+              sub={catName}
+              thumb={venueImage(v)}
+              onEdit={() => {
+                setEditingId(v.id);
+                setImage(v.image || "");
+              }}
+            />
+          );
+        })}
       </div>
     </Collapsible>
   );
@@ -1061,8 +1184,8 @@ function DealsManager() {
           <Field label="Valid until">
             <input type="date" className="input" value={form.validUntil} onChange={(e) => setForm({ ...form, validUntil: e.target.value })} />
           </Field>
-          <Field label="Image URL (optional)">
-            <input className="input" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://…" />
+          <Field label="Photo">
+            <ImageField value={form.image} onChange={(url) => setForm({ ...form, image: url })} folder="deals" />
           </Field>
         </div>
         <Field label="Description">

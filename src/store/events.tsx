@@ -22,6 +22,7 @@ interface EventsContextValue {
   upcoming: AppEvent[];
   getEventById: (id?: string) => AppEvent | undefined;
   addEvent: (input: EventInput) => Promise<WriteResult>;
+  updateEvent: (id: string, patch: Partial<EventInput>) => Promise<WriteResult>;
   removeEvent: (id: string) => Promise<WriteResult>;
 }
 
@@ -122,6 +123,22 @@ export function EventsProvider({ children }: { children: ReactNode }) {
     [fetchAll],
   );
 
+  const updateEvent = useCallback(
+    async (id: string, patch: Partial<EventInput>): Promise<WriteResult> => {
+      if (supabase) {
+        const row = toRow({ ...(events.find((e) => e.id === id) as AppEvent), ...patch, id });
+        const { data, error } = await supabase.from("events").update(row).eq("id", id).select();
+        if (error) return { error: error.message };
+        if (!data || data.length === 0) return { error: NOT_SAVED };
+        await fetchAll();
+      } else {
+        setEvents((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+      }
+      return {};
+    },
+    [events, fetchAll],
+  );
+
   const removeEvent = useCallback(
     async (id: string): Promise<WriteResult> => {
       if (supabase) {
@@ -147,9 +164,10 @@ export function EventsProvider({ children }: { children: ReactNode }) {
       upcoming: upcomingAll.slice(0, 3),
       getEventById: (id) => events.find((e) => e.id === id),
       addEvent,
+      updateEvent,
       removeEvent,
     };
-  }, [events, addEvent, removeEvent]);
+  }, [events, addEvent, updateEvent, removeEvent]);
 
   return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>;
 }
