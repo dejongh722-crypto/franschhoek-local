@@ -16,7 +16,7 @@ export function EventRow({ event }: { event: AppEvent }) {
         src={event.image}
         alt={event.title}
         onError={(e) => {
-          const fb = categoryImage(event.categorySlug);
+          const fb = categoryImage(event.categorySlug, event.id);
           if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
         }}
         className="h-16 w-16 shrink-0 rounded-xl object-cover"

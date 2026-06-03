@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Share2, MapPin, Navigation, Globe, Phone } from "lucide-react";
-import { categoryBySlug } from "@/data/categories";
+import { categoryBySlug, categoryImage } from "@/data/categories";
 import { venueImage } from "@/data/venues";
 import { useVenues } from "@/store/venues";
 import { useToast } from "@/store/toast";
@@ -43,7 +43,15 @@ export function VenueDetail() {
     <div className="pb-12">
       {/* Image header */}
       <div className="relative h-64">
-        <img src={venueImage(venue)} alt={venue.name} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={venueImage(venue)}
+          alt={venue.name}
+          onError={(e) => {
+            const fb = categoryImage(venue.categorySlug, venue.id);
+            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
 
         <div className="relative flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)]">

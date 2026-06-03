@@ -19,7 +19,7 @@ export function EventCard({ event }: { event: AppEvent }) {
           src={event.image}
           alt={event.title}
           onError={(e) => {
-            const fb = categoryImage(event.categorySlug);
+            const fb = categoryImage(event.categorySlug, event.id);
             if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
           }}
           className="absolute inset-0 h-full w-full object-cover"

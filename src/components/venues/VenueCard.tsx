@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight } from "lucide-react";
-import { categoryBySlug } from "@/data/categories";
+import { categoryBySlug, categoryImage } from "@/data/categories";
 import { venueImage, type Venue } from "@/data/venues";
 
 export function VenueCard({ venue }: { venue: Venue }) {
@@ -12,7 +12,15 @@ export function VenueCard({ venue }: { venue: Venue }) {
       onClick={() => navigate(`/venues/${venue.id}`)}
       className="group flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-white p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
     >
-      <img src={venueImage(venue)} alt={venue.name} className="h-20 w-20 shrink-0 rounded-xl object-cover" />
+      <img
+        src={venueImage(venue)}
+        alt={venue.name}
+        onError={(e) => {
+          const fb = categoryImage(venue.categorySlug, venue.id);
+          if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+        }}
+        className="h-20 w-20 shrink-0 rounded-xl object-cover"
+      />
       <div className="min-w-0 flex-1">
         {cat && (
           <span className="text-[11px] font-semibold" style={{ color: cat.color }}>

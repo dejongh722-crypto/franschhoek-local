@@ -1,6 +1,8 @@
 /** Local venues (real spots). Live data comes from the scraper via Supabase;
  *  this small set is the offline/dev fallback. */
 
+import { categoryImage } from "@/data/categories";
+
 export interface Venue {
   id: string;
   name: string;
@@ -15,19 +17,9 @@ export interface Venue {
 const img = (id: string, w = 800) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
 
-/** Tasteful per-category placeholder when a scraped venue has no image. */
-const CATEGORY_IMG: Record<string, string> = {
-  wineries: img("1506377247377-2a5b3b417ebb"),
-  restaurants: img("1517248135467-4c7edcad34c4"),
-  coffee: img("1495474472287-4d71bcdd2085"),
-  hotels: img("1571896349842-33c89424de2d"),
-  art: img("1577720580479-7d839d829c73"),
-  adventure: img("1551632811-561732d1e306"),
-  padel: img("1554068865-24cecd4e34b8"),
-};
-
+/** A venue's own photo, or a varied per-category placeholder (by id) when it has none. */
 export function venueImage(v: Venue): string {
-  return v.image || CATEGORY_IMG[v.categorySlug] || CATEGORY_IMG.wineries;
+  return v.image || categoryImage(v.categorySlug, v.id);
 }
 
 export const venues: Venue[] = [

@@ -47,8 +47,8 @@ function fromRow(r: EventRow): AppEvent {
     venue: r.venue ?? "",
     categorySlug: r.category_slug ?? "",
     date: r.date ?? "",
-    // Scraped events rarely carry an image — show a relevant category photo instead of a blank.
-    image: r.image || categoryImage(r.category_slug ?? ""),
+    // Scraped events rarely carry an image — show a relevant (and varied) category photo.
+    image: r.image || categoryImage(r.category_slug ?? "", r.id),
     isPremium: r.is_premium,
     price: r.price ?? "Free",
     hasChat: r.has_chat,
