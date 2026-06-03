@@ -137,18 +137,36 @@ const longDayFmt = new Intl.DateTimeFormat("en-ZA", {
 });
 const timeFmt = new Intl.DateTimeFormat("en-ZA", { hour: "2-digit", minute: "2-digit", hour12: false });
 
+/**
+ * Parse a possibly-messy date string into a valid Date, or null.
+ * Scraped dates can be ranges ("2026-09-04/2026-09-05") or carry extra text —
+ * take the first chunk so we still show a sensible date. Returns null when
+ * nothing parses, so callers can fall back instead of throwing (Intl.format
+ * throws a RangeError on an invalid Date).
+ */
+function toDate(iso: string): Date | null {
+  if (!iso) return null;
+  const first = iso.split(/\/|\s–\s|\s-\s|\sto\s/i)[0].trim();
+  const d = new Date(first);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 export function formatEventDate(iso: string) {
-  return dayFmt.format(new Date(iso));
+  const d = toDate(iso);
+  return d ? dayFmt.format(d) : "Date TBC";
 }
 export function formatEventDateLong(iso: string) {
-  return longDayFmt.format(new Date(iso));
+  const d = toDate(iso);
+  return d ? longDayFmt.format(d) : "Date to be confirmed";
 }
 export function formatEventTime(iso: string) {
-  return timeFmt.format(new Date(iso));
+  const d = toDate(iso);
+  return d ? timeFmt.format(d) : "";
 }
 /** Short month + day, e.g. { month: "JUN", day: "06" } for date badges. */
 export function dateBadge(iso: string) {
-  const d = new Date(iso);
+  const d = toDate(iso);
+  if (!d) return { month: "TBC", day: "—" };
   return {
     month: new Intl.DateTimeFormat("en-ZA", { month: "short" }).format(d).toUpperCase(),
     day: new Intl.DateTimeFormat("en-ZA", { day: "2-digit" }).format(d),
