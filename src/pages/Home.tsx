@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Crown, Lock } from "lucide-react";
 import { Hero } from "@/components/home/Hero";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
@@ -9,11 +10,13 @@ import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { KnowledgeCard } from "@/components/knowledge/KnowledgeCard";
 import { useEvents } from "@/store/events";
 import { useKnowledge } from "@/store/knowledge";
+import { useMembership } from "@/store/membership";
 
 export function Home() {
   const navigate = useNavigate();
   const { featured, upcoming } = useEvents();
   const { posts: knowledgePosts } = useKnowledge();
+  const { isPremium } = useMembership();
 
   return (
     <div className="pb-6">
@@ -60,14 +63,47 @@ export function Home() {
           </div>
         </section>
 
-        {/* Happening soon */}
+        {/* Happening soon — premium only */}
         <section>
-          <SectionHeader title="Happening soon" action="See all" onAction={() => navigate("/events")} />
-          <div className="mt-4 space-y-3 px-5">
-            {upcoming.map((event) => (
-              <EventRow key={event.id} event={event} />
-            ))}
-          </div>
+          <SectionHeader
+            title="Happening soon"
+            action={isPremium ? "See all" : undefined}
+            onAction={isPremium ? () => navigate("/events") : undefined}
+          />
+          {isPremium ? (
+            <div className="mt-4 space-y-3 px-5">
+              {upcoming.map((event) => (
+                <EventRow key={event.id} event={event} />
+              ))}
+            </div>
+          ) : (
+            <div className="relative mt-4 px-5">
+              {/* Blurred teaser behind the premium gate */}
+              <div className="pointer-events-none min-h-[140px] select-none space-y-3 opacity-60 blur-[3px]" aria-hidden>
+                {upcoming.map((event) => (
+                  <EventRow key={event.id} event={event} />
+                ))}
+              </div>
+              <div className="absolute inset-0 grid place-items-center px-5">
+                <div className="w-full max-w-xs rounded-2xl bg-white/95 p-5 text-center shadow-lg ring-1 ring-black/5 backdrop-blur">
+                  <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-wine/10 text-wine">
+                    <Lock className="h-5 w-5" strokeWidth={1.75} />
+                  </span>
+                  <div className="mt-3 flex items-center justify-center gap-1.5 text-cta">
+                    <Crown className="h-3.5 w-3.5" strokeWidth={2} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em]">Premium</span>
+                  </div>
+                  <p className="mt-1 text-sm font-medium text-ink">See what's happening soon</p>
+                  <button
+                    onClick={() => navigate("/membership")}
+                    className="mt-3 w-full rounded-full bg-cta py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cta-hover active:scale-[0.99]"
+                  >
+                    Go Premium
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </section>
       </div>
     </div>
