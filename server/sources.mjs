@@ -44,10 +44,12 @@ export const SOURCES = [
   // ── Art ────────────────────────────────────────────────────────────
   { url: "https://www.franschhoek.org.za/art/", category: "art", kinds: ["venue", "event"] },
 
-  // ── Coffee & Padel ─────────────────────────────────────────────────
-  // No reliable directory page yet — add the specific pages you want here, e.g.
-  // a roaster's site (coffee) or a padel club's bookings/events page.
-  // { url: "https://<coffee-spot>/franschhoek", category: "coffee", kinds: ["venue"] },
+  // ── Coffee ─────────────────────────────────────────────────────────
+  { url: "https://www.terbodore.com/", category: "coffee", kinds: ["venue"] },
+
+  // ── Padel ──────────────────────────────────────────────────────────
+  // No reliable Franschhoek padel site yet — add a club's page here when one exists.
+  // Until then, padel venues are added manually via the Admin panel.
   // { url: "https://<padel-club>/franschhoek", category: "padel", kinds: ["venue", "event"] },
 ];
 

@@ -216,17 +216,61 @@ function htmlToText(html) {
     .slice(0, 30_000);
 }
 
-async function aiExtract(category, sourceUrl, text) {
+function absUrl(src, base) {
+  try {
+    return new URL(src, base).href;
+  } catch {
+    return null;
+  }
+}
+
+/** Real photos from a page: og:image plus <img> candidates (with alt), as absolute URLs. */
+function extractImages(html, baseUrl) {
+  const meta =
+    html.match(
+      /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image)["'][^>]+content=["']([^"']+)["']/i,
+    ) || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/i);
+  const ogImage = meta ? absUrl(meta[1], baseUrl) : null;
+
+  const candidates = [];
+  const seen = new Set();
+  for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = m[0];
+    const src =
+      tag.match(/\b(?:data-src|data-lazy-src|data-original|src)=["']([^"']+)["']/i)?.[1] ||
+      tag.match(/\bsrcset=["']([^"'\s,]+)/i)?.[1];
+    if (!src) continue;
+    const url = absUrl(src, baseUrl);
+    if (!url || seen.has(url)) continue;
+    // Skip logos / icons / spacers — we want real content photos.
+    if (/\.svg(\?|$)|^data:|sprite|logo|icon|favicon|placeholder|pixel|spacer/i.test(url)) continue;
+    seen.add(url);
+    const alt = (tag.match(/\balt=["']([^"']*)["']/i)?.[1] || "").trim();
+    candidates.push({ url, alt });
+    if (candidates.length >= 40) break;
+  }
+  return { ogImage, candidates };
+}
+
+async function aiExtract(category, sourceUrl, text, images = []) {
   if (!anthropic || !text) return { venues: [], events: [], deals: [] };
+  const imgList = images.map((im, i) => `[${i}] ${im.alt || "(no alt text)"}`).join("\n") || "(none)";
   const prompt = `You are extracting real, structured data from a Franschhoek (South Africa) "${category}" web page for a local-discovery app.
 
-From the page text below, extract genuine venues, events and deals. Only include items clearly present in the text — do NOT invent anything. Return STRICT JSON (no markdown) of the shape:
+From the page text below, extract genuine venues, events and deals. Only include items clearly present in the text — do NOT invent anything.
+
+A numbered list of images found on the page (with their alt text) is provided. For each item set "imageIndex" to the number of the image that best matches that item by name, or -1 when none clearly matches. Never guess an index.
+
+Return STRICT JSON (no markdown) of the shape:
 {
-  "venues": [{ "name": "", "description": "", "address": "", "website": "", "phone": "" }],
-  "events": [{ "title": "", "venue": "", "date": "ISO 8601 if known else empty", "price": "e.g. R250 or Free", "description": "" }],
-  "deals":  [{ "title": "", "venue": "", "discount": "e.g. 20% OFF", "code": "if any", "validUntil": "ISO date if known else empty", "description": "" }]
+  "venues": [{ "name": "", "imageIndex": -1, "description": "", "address": "", "website": "", "phone": "" }],
+  "events": [{ "title": "", "imageIndex": -1, "venue": "", "date": "ISO 8601 if known else empty", "price": "e.g. R250 or Free", "description": "" }],
+  "deals":  [{ "title": "", "imageIndex": -1, "venue": "", "discount": "e.g. 20% OFF", "code": "if any", "validUntil": "ISO date if known else empty", "description": "" }]
 }
 Use empty arrays where there's nothing. Keep descriptions under 60 words.
+
+IMAGES:
+${imgList}
 
 PAGE TEXT:
 ${text}`;
@@ -234,7 +278,7 @@ ${text}`;
   try {
     const res = await anthropic.messages.create({
       model: MODEL,
-      max_tokens: 1800,
+      max_tokens: 2000,
       messages: [{ role: "user", content: prompt }],
     });
     const raw = res.content
@@ -244,10 +288,16 @@ ${text}`;
       .trim();
     const json = raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1);
     const parsed = JSON.parse(json);
+    // Resolve imageIndex -> a real URL from the candidate list (drop out-of-range/hallucinated).
+    const withImage = (arr) =>
+      (Array.isArray(arr) ? arr : []).map((it) => {
+        const idx = Number.isInteger(it.imageIndex) ? it.imageIndex : -1;
+        return { ...it, image: idx >= 0 && idx < images.length ? images[idx].url : "" };
+      });
     return {
-      venues: Array.isArray(parsed.venues) ? parsed.venues : [],
-      events: Array.isArray(parsed.events) ? parsed.events : [],
-      deals: Array.isArray(parsed.deals) ? parsed.deals : [],
+      venues: withImage(parsed.venues),
+      events: withImage(parsed.events),
+      deals: withImage(parsed.deals),
     };
   } catch (e) {
     console.warn(`  · AI extract failed for ${sourceUrl}: ${e?.message ?? e}`);
@@ -278,6 +328,7 @@ async function processSource(src, acc) {
     throw new Error(`HTTP ${res.status} for ${url}`);
   }
   const html = await res.text();
+  const { ogImage, candidates } = extractImages(html, url);
 
   const venues = [];
   const events = [];
@@ -298,7 +349,7 @@ async function processSource(src, acc) {
     (kinds.includes("event") && events.length === 0) ||
     (kinds.includes("deal") && deals.length === 0);
   if (anthropic && missingKind) {
-    const ai = await aiExtract(category, url, htmlToText(html));
+    const ai = await aiExtract(category, url, htmlToText(html), candidates);
     if (kinds.includes("venue") && venues.length === 0)
       venues.push(...ai.venues.map((v) => ({ ...v, categorySlug: category })));
     if (kinds.includes("event") && events.length === 0)
@@ -306,6 +357,10 @@ async function processSource(src, acc) {
     if (kinds.includes("deal") && deals.length === 0)
       deals.push(...ai.deals.map((d) => ({ ...d, categorySlug: category })));
   }
+
+  // Single-venue pages (e.g. an individual hotel/restaurant site) — the page's
+  // og:image is that venue's hero photo, so use it when we don't have a better one.
+  if (ogImage && venues.length === 1 && !venues[0].image) venues[0].image = ogImage;
 
   // 3) Public community group links (not chat content — just openly-posted invites).
   const groups = extractWhatsAppGroups(html, category);
