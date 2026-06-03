@@ -8,11 +8,12 @@ import { PremiumBanner } from "@/components/home/PremiumBanner";
 import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { KnowledgeCard } from "@/components/knowledge/KnowledgeCard";
 import { useEvents } from "@/store/events";
-import { knowledgePosts } from "@/data/knowledge";
+import { useKnowledge } from "@/store/knowledge";
 
 export function Home() {
   const navigate = useNavigate();
   const { featured, upcoming } = useEvents();
+  const { posts: knowledgePosts } = useKnowledge();
 
   return (
     <div className="pb-6">

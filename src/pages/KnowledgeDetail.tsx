@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Share2, Clock, Lightbulb, Lock, Crown } from "lucide-react";
 import { categoryBySlug } from "@/data/categories";
-import { formatPublished, getKnowledgeById } from "@/data/knowledge";
+import { formatPublished } from "@/data/knowledge";
+import { useKnowledge } from "@/store/knowledge";
 import { useMembership } from "@/store/membership";
 import { useToast } from "@/store/toast";
 import { share } from "@/lib/share";
@@ -9,7 +10,8 @@ import { share } from "@/lib/share";
 export function KnowledgeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const post = getKnowledgeById(id);
+  const { getPostById } = useKnowledge();
+  const post = getPostById(id);
   const { isPremium } = useMembership();
   const toast = useToast();
 

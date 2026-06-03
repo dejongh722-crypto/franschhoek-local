@@ -6,13 +6,14 @@ import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { KnowledgeCard } from "@/components/knowledge/KnowledgeCard";
 import { KnowledgeLocked } from "@/components/knowledge/KnowledgeLocked";
 import { categoryBySlug } from "@/data/categories";
-import { knowledgePosts } from "@/data/knowledge";
+import { useKnowledge } from "@/store/knowledge";
 import { useMembership } from "@/store/membership";
 
 const FEATURED_ID = "where-locals-actually-eat";
 
 export function Knowledge() {
   const { isPremium } = useMembership();
+  const { posts: knowledgePosts } = useKnowledge();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
@@ -37,7 +38,7 @@ export function Knowledge() {
         q ? p.title.toLowerCase().includes(q) || p.excerpt.toLowerCase().includes(q) : true,
       )
       .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
-  }, [selectedCategory, query]);
+  }, [knowledgePosts, selectedCategory, query]);
 
   return (
     <div className="pb-6">

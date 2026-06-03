@@ -24,6 +24,7 @@ import {
   RefreshCw,
   MessagesSquare,
   MapPinned,
+  BookOpen,
   type LucideIcon,
 } from "lucide-react";
 import { analytics, monthlyRevenue, zar } from "@/data/analytics";
@@ -37,6 +38,7 @@ import { isPromoLive, usePromotions, type Audience, type Promotion } from "@/sto
 import { useEvents } from "@/store/events";
 import { useVenues } from "@/store/venues";
 import { useDeals } from "@/store/deals";
+import { useKnowledge } from "@/store/knowledge";
 import { venueImage } from "@/data/venues";
 import { ImageField } from "@/components/admin/ImageField";
 import { useCommunityGroups } from "@/store/communityGroups";
@@ -606,6 +608,9 @@ export function Admin() {
         {/* Manage deals */}
         <DealsManager />
 
+        {/* Manage local knowledge */}
+        <KnowledgeManager />
+
         {/* Manage community groups */}
         <GroupsManager />
 
@@ -1050,6 +1055,136 @@ function EventsManager() {
             onEdit={() => startEdit(ev)}
             onDelete={async () => {
               const { error } = await removeEvent(ev.id);
+              if (error) toast(error);
+            }}
+          />
+        ))}
+      </div>
+    </Collapsible>
+  );
+}
+
+function KnowledgeManager() {
+  const { posts, addPost, updatePost, removePost } = useKnowledge();
+  const toast = useToast();
+  const empty = {
+    title: "",
+    excerpt: "",
+    categorySlug: categories[0].slug,
+    author: "",
+    publishedAt: "",
+    readMinutes: 4,
+    image: "",
+    body: "",
+    tips: "",
+  };
+  const [form, setForm] = useState(empty);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const startEdit = (p: (typeof posts)[number]) => {
+    setEditingId(p.id);
+    setForm({
+      title: p.title,
+      excerpt: p.excerpt,
+      categorySlug: p.categorySlug || categories[0].slug,
+      author: p.author,
+      publishedAt: p.publishedAt?.slice(0, 10) || "",
+      readMinutes: p.readMinutes,
+      image: p.image,
+      body: p.body.join("\n\n"),
+      tips: (p.tips ?? []).join("\n"),
+    });
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm(empty);
+  };
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim()) return toast("Add a title");
+    setSaving(true);
+    const payload = {
+      title: form.title.trim(),
+      excerpt: form.excerpt.trim(),
+      categorySlug: form.categorySlug,
+      author: form.author.trim() || "Franschhoek Local",
+      publishedAt: form.publishedAt || new Date().toISOString().slice(0, 10),
+      readMinutes: Number(form.readMinutes) || 4,
+      image: form.image.trim(),
+      body: form.body.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean),
+      tips: form.tips.split(/\n/).map((s) => s.trim()).filter(Boolean),
+    };
+    const { error } = editingId ? await updatePost(editingId, payload) : await addPost(payload);
+    setSaving(false);
+    if (error) return toast(error);
+    toast(editingId ? "Guide updated" : "Guide added");
+    cancelEdit();
+  };
+
+  return (
+    <Collapsible icon={BookOpen} title={`Local knowledge (${posts.length})`} subtitle="Write local guides & insider tips for premium members.">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+        <Field label="Title">
+          <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Where locals actually eat" />
+        </Field>
+        <Field label="Excerpt">
+          <input className="input" value={form.excerpt} onChange={(e) => setForm({ ...form, excerpt: e.target.value })} placeholder="One-line teaser shown on the card" />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Category">
+            <select className="input" value={form.categorySlug} onChange={(e) => setForm({ ...form, categorySlug: e.target.value })}>
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>{c.name}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Author">
+            <input className="input" value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} placeholder="Marieke van Wyk" />
+          </Field>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Published">
+            <input type="date" className="input" value={form.publishedAt} onChange={(e) => setForm({ ...form, publishedAt: e.target.value })} />
+          </Field>
+          <Field label="Read minutes">
+            <input type="number" min={1} className="input" value={form.readMinutes} onChange={(e) => setForm({ ...form, readMinutes: Number(e.target.value) })} />
+          </Field>
+        </div>
+        <Field label="Cover photo">
+          <ImageField value={form.image} onChange={(url) => setForm({ ...form, image: url })} folder="knowledge" />
+        </Field>
+        <Field label="Body (separate paragraphs with a blank line)">
+          <textarea rows={6} className="input resize-none" value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} placeholder="Write the guide…" />
+        </Field>
+        <Field label="Insider tips (one per line, optional)">
+          <textarea rows={3} className="input resize-none" value={form.tips} onChange={(e) => setForm({ ...form, tips: e.target.value })} placeholder="Book the 10am slot for the quietest tastings" />
+        </Field>
+        <div className="flex gap-2">
+          {editingId && (
+            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+              Cancel
+            </button>
+          )}
+          <button type="submit" disabled={saving} className="flex flex-1 items-center justify-center gap-2 rounded-full bg-wine py-3 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+            {saving ? "Saving…" : editingId ? "Save changes" : "Add guide"}
+          </button>
+        </div>
+      </form>
+
+      <div className="mt-3 space-y-2">
+        {posts.map((p) => (
+          <ManageRow
+            key={p.id}
+            title={p.title}
+            sub={`${p.author} · ${p.readMinutes} min read`}
+            thumb={p.image}
+            onEdit={() => startEdit(p)}
+            onDelete={async () => {
+              const { error } = await removePost(p.id);
               if (error) toast(error);
             }}
           />

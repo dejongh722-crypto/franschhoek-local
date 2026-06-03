@@ -16,6 +16,7 @@ import { ToastProvider } from "@/store/toast";
 import { ProfileProvider } from "@/store/profile";
 import { NotificationsProvider } from "@/store/notifications";
 import { PromotionsProvider } from "@/store/promotions";
+import { KnowledgeProvider } from "@/store/knowledge";
 
 // Route-level code-splitting — each page loads on demand.
 const Home = lazy(() => import("@/pages/Home").then((m) => ({ default: m.Home })));
@@ -64,6 +65,7 @@ export default function App() {
               <MembershipProvider>
                 <EventsProvider>
                 <DealsProvider>
+                <KnowledgeProvider>
                 <VenuesProvider>
                 <CommunityGroupsProvider>
                 <UserEventsProvider>
@@ -101,6 +103,7 @@ export default function App() {
                 </UserEventsProvider>
                 </CommunityGroupsProvider>
                 </VenuesProvider>
+                </KnowledgeProvider>
                 </DealsProvider>
                 </EventsProvider>
               </MembershipProvider>
