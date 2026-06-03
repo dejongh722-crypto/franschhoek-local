@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, Compass, CalendarDays, Tag, User, type LucideIcon } from "lucide-react";
+import { Home, Compass, CalendarDays, Tag, MessagesSquare, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -13,7 +13,7 @@ const items: NavItem[] = [
   { to: "/explore", label: "Explore", icon: Compass },
   { to: "/events", label: "Events", icon: CalendarDays },
   { to: "/deals", label: "Deals", icon: Tag },
-  { to: "/profile", label: "Profile", icon: User },
+  { to: "/community", label: "Community", icon: MessagesSquare },
 ];
 
 export function BottomNav() {
