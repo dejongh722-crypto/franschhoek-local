@@ -24,6 +24,7 @@ const EventDetail = lazy(() => import("@/pages/EventDetail").then((m) => ({ defa
 const Deals = lazy(() => import("@/pages/Deals").then((m) => ({ default: m.Deals })));
 const DealDetail = lazy(() => import("@/pages/DealDetail").then((m) => ({ default: m.DealDetail })));
 const Venues = lazy(() => import("@/pages/Venues").then((m) => ({ default: m.Venues })));
+const Explore = lazy(() => import("@/pages/Explore").then((m) => ({ default: m.Explore })));
 const VenueDetail = lazy(() => import("@/pages/VenueDetail").then((m) => ({ default: m.VenueDetail })));
 const Knowledge = lazy(() => import("@/pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const KnowledgeDetail = lazy(() => import("@/pages/KnowledgeDetail").then((m) => ({ default: m.KnowledgeDetail })));
@@ -76,6 +77,7 @@ export default function App() {
                           <Route path="/events/:id" element={<EventDetail />} />
                           <Route path="/deals" element={<Deals />} />
                           <Route path="/deals/:id" element={<DealDetail />} />
+                          <Route path="/explore" element={<Explore />} />
                           <Route path="/venues" element={<Venues />} />
                           <Route path="/venues/:id" element={<VenueDetail />} />
                           <Route path="/knowledge" element={<Knowledge />} />

@@ -7,15 +7,12 @@ import { EventRow } from "@/components/home/EventRow";
 import { PremiumBanner } from "@/components/home/PremiumBanner";
 import { PromoCarousel } from "@/components/home/PromoCarousel";
 import { KnowledgeCard } from "@/components/knowledge/KnowledgeCard";
-import { VenueCard } from "@/components/venues/VenueCard";
 import { useEvents } from "@/store/events";
-import { useVenues } from "@/store/venues";
 import { knowledgePosts } from "@/data/knowledge";
 
 export function Home() {
   const navigate = useNavigate();
   const { featured, upcoming } = useEvents();
-  const { venues } = useVenues();
 
   return (
     <div className="pb-6">
@@ -25,25 +22,13 @@ export function Home() {
         {/* Featured promotions / adverts (renders nothing when none are live) */}
         <PromoCarousel />
 
-        {/* Categories */}
+        {/* Categories — tap through to Explore */}
         <section>
-          <SectionHeader title="Browse by category" />
+          <SectionHeader title="Explore Franschhoek" action="See all" onAction={() => navigate("/explore")} />
           <div className="mt-4">
             <CategoryGrid />
           </div>
         </section>
-
-        {/* Local spots (real venues from the scraper) */}
-        {venues.length > 0 && (
-          <section>
-            <SectionHeader title="Local spots" action="See all" onAction={() => navigate("/venues")} />
-            <div className="mt-4 space-y-3 px-5">
-              {venues.slice(0, 3).map((venue) => (
-                <VenueCard key={venue.id} venue={venue} />
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* Featured events */}
         <section>

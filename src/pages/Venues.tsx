@@ -41,7 +41,7 @@ export function Venues() {
           }}
         />
         <div className="relative">
-          <h1 className="font-display text-3xl font-semibold">Local Spots</h1>
+          <h1 className="font-display text-3xl font-semibold">Explore</h1>
           <p className="mt-1 text-sm text-white/80">Wineries, restaurants, coffee &amp; more around Franschhoek</p>
           <SearchBar
             className="mt-4 shadow-lg shadow-black/20"

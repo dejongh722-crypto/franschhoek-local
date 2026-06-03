@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Home, CalendarDays, Tag, MessagesSquare, User, type LucideIcon } from "lucide-react";
+import { Home, Compass, CalendarDays, Tag, User, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -10,9 +10,9 @@ interface NavItem {
 
 const items: NavItem[] = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/explore", label: "Explore", icon: Compass },
   { to: "/events", label: "Events", icon: CalendarDays },
   { to: "/deals", label: "Deals", icon: Tag },
-  { to: "/community", label: "Community", icon: MessagesSquare },
   { to: "/profile", label: "Profile", icon: User },
 ];
 
