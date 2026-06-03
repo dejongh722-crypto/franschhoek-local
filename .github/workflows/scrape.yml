@@ -1,0 +1,33 @@
+name: Scrape Franschhoek content
+
+# Runs the content scraper every 4 hours (and on manual trigger).
+on:
+  schedule:
+    - cron: "0 */4 * * *" # every 4 hours, on the hour (UTC)
+  workflow_dispatch: {}
+
+# Don't let runs overlap.
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node server/scraper.mjs

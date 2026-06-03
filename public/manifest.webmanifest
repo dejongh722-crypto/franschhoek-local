@@ -1,0 +1,16 @@
+{
+  "name": "Franschhoek Local",
+  "short_name": "Franschhoek",
+  "description": "Discover events, local deals and the community in Franschhoek.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#faf7f2",
+  "theme_color": "#7c2d3a",
+  "categories": ["lifestyle", "travel", "events"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
