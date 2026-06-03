@@ -208,9 +208,12 @@ function htmlToText(html) {
     .replace(/<style[\s\S]*?<\/style>/gi, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
+    // Page-builders (e.g. Thrive) inline huge base64-encoded CSS blobs that survive
+    // tag-stripping and otherwise crowd out the real listing text. Drop long runs.
+    .replace(/[A-Za-z0-9+/]{200,}={0,2}/g, " ")
     .replace(/\s+/g, " ")
     .trim()
-    .slice(0, 12_000);
+    .slice(0, 30_000);
 }
 
 async function aiExtract(category, sourceUrl, text) {
