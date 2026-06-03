@@ -56,7 +56,19 @@ try {
   process.exit(1);
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+let supabase;
+try {
+  supabase = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false } });
+} catch (e) {
+  console.error("✗ createClient failed:", e?.message ?? e);
+  console.error(
+    `  diagnostics → url="${SUPABASE_URL}", keyLength=${SERVICE_KEY.length}, keyPrefix="${SERVICE_KEY.slice(
+      0,
+      3,
+    )}…", anthropicKeySet=${Boolean(ANTHROPIC_API_KEY)}`,
+  );
+  process.exit(1);
+}
 const anthropic = ANTHROPIC_API_KEY ? new Anthropic({ apiKey: ANTHROPIC_API_KEY }) : null;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
