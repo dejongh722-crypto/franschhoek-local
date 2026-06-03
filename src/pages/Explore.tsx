@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { PartyPopper } from "lucide-react";
+import { PartyPopper, Crown } from "lucide-react";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import { VenueTile } from "@/components/venues/VenueTile";
 import { EventCard } from "@/components/home/EventCard";
@@ -8,6 +8,7 @@ import { categories } from "@/data/categories";
 import { byDate, isUpcoming } from "@/data/events";
 import { useVenues } from "@/store/venues";
 import { useEvents } from "@/store/events";
+import { useMembership } from "@/store/membership";
 
 /** A horizontal, snapping rail used for every showcase row. */
 function Rail({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export function Explore() {
   const navigate = useNavigate();
   const { venues } = useVenues();
   const { events } = useEvents();
+  const { isPremium } = useMembership();
 
   const byCategory = useMemo(() => {
     const map: Record<string, typeof venues> = {};
@@ -74,19 +76,38 @@ export function Explore() {
           );
         })}
 
-        {/* Festivals & markets (upcoming events) */}
+        {/* Festivals & markets (upcoming events) — premium only */}
         {festivals.length > 0 && (
           <section>
             <SectionHeader
               title="Festivals & Markets"
-              action="See all"
-              onAction={() => navigate("/events")}
+              action={isPremium ? "See all" : undefined}
+              onAction={isPremium ? () => navigate("/events") : undefined}
             />
-            <Rail>
-              {festivals.slice(0, 10).map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
-            </Rail>
+            {isPremium ? (
+              <Rail>
+                {festivals.slice(0, 10).map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </Rail>
+            ) : (
+              <div className="relative mt-3">
+                <div className="no-scrollbar pointer-events-none flex select-none gap-3 overflow-hidden px-5 pb-1 opacity-60 blur-[3px]" aria-hidden>
+                  {festivals.slice(0, 10).map((event) => (
+                    <EventCard key={event.id} event={event} />
+                  ))}
+                </div>
+                <div className="absolute inset-0 grid place-items-center">
+                  <button
+                    onClick={() => navigate("/membership")}
+                    className="flex items-center gap-2 rounded-full bg-cta px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cta-hover active:scale-[0.99]"
+                  >
+                    <Crown className="h-4 w-4" strokeWidth={2} />
+                    Go Premium for events
+                  </button>
+                </div>
+              </div>
+            )}
           </section>
         )}
 

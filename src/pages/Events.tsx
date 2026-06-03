@@ -4,11 +4,14 @@ import { CalendarSearch } from "lucide-react";
 import { SearchBar } from "@/components/home/SearchBar";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { EventListCard } from "@/components/events/EventListCard";
+import { EventsLocked } from "@/components/events/EventsLocked";
 import { byDate, isUpcoming } from "@/data/events";
 import { useEvents } from "@/store/events";
+import { useMembership } from "@/store/membership";
 
 export function Events() {
   const { events } = useEvents();
+  const { isPremium } = useMembership();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category");
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
@@ -45,44 +48,52 @@ export function Events() {
         <div className="relative">
           <h1 className="font-display text-3xl font-semibold">Events</h1>
           <p className="mt-1 text-sm text-white/80">What's happening around Franschhoek</p>
-          <SearchBar
-            className="mt-4 shadow-lg shadow-black/20"
-            value={query}
-            onChange={setQuery}
-            showFilter={false}
-          />
+          {isPremium && (
+            <SearchBar
+              className="mt-4 shadow-lg shadow-black/20"
+              value={query}
+              onChange={setQuery}
+              showFilter={false}
+            />
+          )}
         </div>
       </header>
 
-      {/* Category filter grid */}
-      <div className="py-5">
-        <CategoryGrid selectable selected={selectedCategory} onSelect={setCategory} />
-      </div>
-
-      {/* Results */}
-      <div className="px-5">
-        <p className="mb-3 text-xs font-medium text-muted">
-          {filtered.length} {filtered.length === 1 ? "event" : "events"}
-        </p>
-
-        {filtered.length > 0 ? (
-          <div className="space-y-4">
-            {filtered.map((event) => (
-              <EventListCard key={event.id} event={event} />
-            ))}
+      {!isPremium ? (
+        <EventsLocked />
+      ) : (
+        <>
+          {/* Category filter grid */}
+          <div className="py-5">
+            <CategoryGrid selectable selected={selectedCategory} onSelect={setCategory} />
           </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <span className="grid h-16 w-16 place-items-center rounded-2xl bg-wine/10 text-wine">
-              <CalendarSearch className="h-7 w-7" strokeWidth={1.75} />
-            </span>
-            <h2 className="mt-4 font-display text-xl font-semibold text-ink">No events found</h2>
-            <p className="mt-1 max-w-xs text-sm text-muted">
-              Try a different category or clear your search.
+
+          {/* Results */}
+          <div className="px-5">
+            <p className="mb-3 text-xs font-medium text-muted">
+              {filtered.length} {filtered.length === 1 ? "event" : "events"}
             </p>
+
+            {filtered.length > 0 ? (
+              <div className="space-y-4">
+                {filtered.map((event) => (
+                  <EventListCard key={event.id} event={event} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <span className="grid h-16 w-16 place-items-center rounded-2xl bg-wine/10 text-wine">
+                  <CalendarSearch className="h-7 w-7" strokeWidth={1.75} />
+                </span>
+                <h2 className="mt-4 font-display text-xl font-semibold text-ink">No events found</h2>
+                <p className="mt-1 max-w-xs text-sm text-muted">
+                  Try a different category or clear your search.
+                </p>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

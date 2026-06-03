@@ -49,7 +49,7 @@ export function EventDetail() {
   const Icon = cat?.icon;
   const saved = isSaved(event.id);
   const attending = isAttending(event.id);
-  const locked = event.isPremium && !isPremium;
+  const locked = !isPremium;
   const chatAvailable = event.hasChat && isPremium && attending;
 
   return (

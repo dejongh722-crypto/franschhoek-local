@@ -34,14 +34,37 @@ export function Home() {
           </div>
         </section>
 
-        {/* Featured events */}
+        {/* Featured events — premium only */}
         <section>
-          <SectionHeader title="Featured this week" action="See all" onAction={() => navigate("/events")} />
-          <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-pl-5 px-5 pb-1">
-            {featured.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
+          <SectionHeader
+            title="Featured this week"
+            action={isPremium ? "See all" : undefined}
+            onAction={isPremium ? () => navigate("/events") : undefined}
+          />
+          {isPremium ? (
+            <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-pl-5 px-5 pb-1">
+              {featured.map((event) => (
+                <EventCard key={event.id} event={event} />
+              ))}
+            </div>
+          ) : (
+            <div className="relative mt-4">
+              <div className="no-scrollbar pointer-events-none flex select-none gap-4 overflow-hidden px-5 pb-1 opacity-60 blur-[3px]" aria-hidden>
+                {featured.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+              <div className="absolute inset-0 grid place-items-center">
+                <button
+                  onClick={() => navigate("/membership")}
+                  className="flex items-center gap-2 rounded-full bg-cta px-5 py-2.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cta-hover active:scale-[0.99]"
+                >
+                  <Crown className="h-4 w-4" strokeWidth={2} />
+                  Go Premium for events
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Premium upsell */}
