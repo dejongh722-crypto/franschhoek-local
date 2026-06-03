@@ -4,7 +4,7 @@ import { CalendarSearch } from "lucide-react";
 import { SearchBar } from "@/components/home/SearchBar";
 import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { EventListCard } from "@/components/events/EventListCard";
-import { byDate } from "@/data/events";
+import { byDate, isUpcoming } from "@/data/events";
 import { useEvents } from "@/store/events";
 
 export function Events() {
@@ -23,6 +23,7 @@ export function Events() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return events
+      .filter((e) => isUpcoming(e.date))
       .filter((e) => (selectedCategory ? e.categorySlug === selectedCategory : true))
       .filter((e) =>
         q ? e.title.toLowerCase().includes(q) || e.venue.toLowerCase().includes(q) : true,

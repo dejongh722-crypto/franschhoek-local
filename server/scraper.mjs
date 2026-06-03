@@ -91,6 +91,17 @@ const host = (url) => {
 /** Deterministic id so re-runs upsert (update) the same row instead of duplicating. */
 const stableId = (prefix, sourceUrl, title) => `${prefix}-${slug(host(sourceUrl))}-${slug(title)}`;
 
+/** True if an event date has fully passed (uses the end of a range). Unknown dates are kept. */
+function isPastEvent(iso) {
+  if (!iso) return false;
+  const last = String(iso).split(/\/|\s–\s|\s-\s|\sto\s/i).pop().trim();
+  const d = new Date(last);
+  if (Number.isNaN(d.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return d.getTime() < today.getTime();
+}
+
 async function fetchWithTimeout(url) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
@@ -387,12 +398,14 @@ async function processSource(src, acc) {
   }
   for (const e of cap(events)) {
     if (!e.title) continue;
+    const eventDate = e.date || now.slice(0, 19);
+    if (isPastEvent(eventDate)) continue; // only keep upcoming events
     acc.events.set(stableId("evt", url, e.title), {
       id: stableId("evt", url, e.title),
       title: e.title,
       venue: e.venue || "",
       category_slug: e.categorySlug || category,
-      date: e.date || now.slice(0, 19),
+      date: eventDate,
       image: e.image || "",
       is_premium: false,
       price: e.price || "Free",

@@ -172,3 +172,18 @@ export function dateBadge(iso: string) {
     day: new Intl.DateTimeFormat("en-ZA", { day: "2-digit" }).format(d),
   };
 }
+
+/**
+ * True if an event hasn't fully passed yet. Uses the END of a date range
+ * (so multi-day festivals stay listed until their last day). Unknown or
+ * unparseable dates are treated as upcoming rather than hidden.
+ */
+export function isUpcoming(iso: string): boolean {
+  if (!iso) return true;
+  const last = iso.split(/\/|\s–\s|\s-\s|\sto\s/i).pop()?.trim() ?? "";
+  const d = new Date(last);
+  if (Number.isNaN(d.getTime())) return true;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return d.getTime() >= today.getTime();
+}

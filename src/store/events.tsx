@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
-import { events as seedEvents, byDate, type AppEvent } from "@/data/events";
+import { events as seedEvents, byDate, isUpcoming, type AppEvent } from "@/data/events";
 import { categoryImage } from "@/data/categories";
 import type { WriteResult } from "@/store/promotions";
 
@@ -138,12 +138,13 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<EventsContextValue>(() => {
-    const sorted = [...events].sort(byDate);
-    const featured = events.filter((e) => FEATURED_IDS.includes(e.id));
+    // Only surface events that haven't passed yet, soonest first.
+    const upcomingAll = events.filter((e) => isUpcoming(e.date)).sort(byDate);
+    const featured = upcomingAll.filter((e) => FEATURED_IDS.includes(e.id));
     return {
       events,
-      featured: featured.length > 0 ? featured : sorted.slice(0, 4),
-      upcoming: sorted.slice(0, 3),
+      featured: featured.length > 0 ? featured : upcomingAll.slice(0, 4),
+      upcoming: upcomingAll.slice(0, 3),
       getEventById: (id) => events.find((e) => e.id === id),
       addEvent,
       removeEvent,
