@@ -47,7 +47,7 @@ export function CategoryGrid({ selectable = false, selected = null, onSelect }: 
 
         const handleClick = () => {
           if (selectable) onSelect?.(slug);
-          else navigate(`/events?category=${slug}`);
+          else navigate(slug ? `/venues?category=${slug}` : "/venues");
         };
 
         return (

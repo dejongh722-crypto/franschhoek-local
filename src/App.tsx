@@ -9,6 +9,7 @@ import { UserEventsProvider } from "@/store/userEvents";
 import { MembershipProvider } from "@/store/membership";
 import { EventsProvider } from "@/store/events";
 import { DealsProvider } from "@/store/deals";
+import { VenuesProvider } from "@/store/venues";
 import { ChatProvider } from "@/store/chat";
 import { ToastProvider } from "@/store/toast";
 import { ProfileProvider } from "@/store/profile";
@@ -21,6 +22,8 @@ const Events = lazy(() => import("@/pages/Events").then((m) => ({ default: m.Eve
 const EventDetail = lazy(() => import("@/pages/EventDetail").then((m) => ({ default: m.EventDetail })));
 const Deals = lazy(() => import("@/pages/Deals").then((m) => ({ default: m.Deals })));
 const DealDetail = lazy(() => import("@/pages/DealDetail").then((m) => ({ default: m.DealDetail })));
+const Venues = lazy(() => import("@/pages/Venues").then((m) => ({ default: m.Venues })));
+const VenueDetail = lazy(() => import("@/pages/VenueDetail").then((m) => ({ default: m.VenueDetail })));
 const Knowledge = lazy(() => import("@/pages/Knowledge").then((m) => ({ default: m.Knowledge })));
 const KnowledgeDetail = lazy(() => import("@/pages/KnowledgeDetail").then((m) => ({ default: m.KnowledgeDetail })));
 const Community = lazy(() => import("@/pages/Community").then((m) => ({ default: m.Community })));
@@ -58,6 +61,7 @@ export default function App() {
               <MembershipProvider>
                 <EventsProvider>
                 <DealsProvider>
+                <VenuesProvider>
                 <UserEventsProvider>
                   <ChatProvider>
                     <SyncProfile />
@@ -69,6 +73,8 @@ export default function App() {
                           <Route path="/events/:id" element={<EventDetail />} />
                           <Route path="/deals" element={<Deals />} />
                           <Route path="/deals/:id" element={<DealDetail />} />
+                          <Route path="/venues" element={<Venues />} />
+                          <Route path="/venues/:id" element={<VenueDetail />} />
                           <Route path="/knowledge" element={<Knowledge />} />
                           <Route path="/knowledge/:id" element={<KnowledgeDetail />} />
                           <Route path="/community" element={<Community />} />
@@ -87,6 +93,7 @@ export default function App() {
                     </Suspense>
                   </ChatProvider>
                 </UserEventsProvider>
+                </VenuesProvider>
                 </DealsProvider>
                 </EventsProvider>
               </MembershipProvider>
