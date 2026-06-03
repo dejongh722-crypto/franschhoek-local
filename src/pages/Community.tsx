@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { Lock, Crown, ChevronRight, Users, CalendarPlus, MessageCircle, Bot } from "lucide-react";
+import { Lock, Crown, ChevronRight, Users, CalendarPlus, MessageCircle, Bot, MessagesSquare } from "lucide-react";
 import { formatChatTime, GENERAL_ID, ONLINE_COUNT } from "@/data/chat";
+import { categoryBySlug } from "@/data/categories";
 import { useEvents } from "@/store/events";
 import { useMembership } from "@/store/membership";
 import { useUserEvents } from "@/store/userEvents";
 import { useChat } from "@/store/chat";
+import { useCommunityGroups, type CommunityGroup } from "@/store/communityGroups";
 
 export function Community() {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export function Community() {
   const { isPremium } = useMembership();
   const { attendingIds } = useUserEvents();
   const { getLastMessage } = useChat();
+  const { activeGroups } = useCommunityGroups();
 
   // Only events that have a chat AND that you're attending.
   const myChats = events.filter((e) => e.hasChat && attendingIds.has(e.id));
@@ -23,6 +26,18 @@ export function Community() {
         <h1 className="font-display text-3xl font-semibold">Community</h1>
         <p className="mt-1 text-sm text-white/75">Chat with members and event attendees</p>
       </header>
+
+      {/* Public WhatsApp groups — open to everyone (free discovery). */}
+      {activeGroups.length > 0 && (
+        <section className="px-5 pt-5">
+          <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-muted">Local WhatsApp groups</h2>
+          <div className="space-y-3">
+            {activeGroups.map((g) => (
+              <GroupCard key={g.id} group={g} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {!isPremium ? (
         <Gate onUpgrade={() => navigate("/membership")} />
@@ -111,6 +126,37 @@ export function Community() {
         </div>
       )}
     </div>
+  );
+}
+
+function GroupCard({ group }: { group: CommunityGroup }) {
+  const cat = categoryBySlug[group.categorySlug];
+  return (
+    <a
+      href={group.inviteUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+    >
+      <span
+        className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white"
+        style={{ backgroundColor: cat?.color ?? "var(--color-cat-adventure)" }}
+      >
+        <MessagesSquare className="h-6 w-6" strokeWidth={1.75} />
+      </span>
+      <div className="min-w-0 flex-1">
+        {cat && (
+          <span className="text-[11px] font-semibold" style={{ color: cat.color }}>
+            {cat.name}
+          </span>
+        )}
+        <h3 className="truncate font-semibold text-ink">{group.name}</h3>
+        {group.description && <p className="truncate text-xs text-muted">{group.description}</p>}
+      </div>
+      <span className="shrink-0 rounded-full bg-cat-adventure px-3 py-1.5 text-xs font-semibold text-white">
+        Join
+      </span>
+    </a>
   );
 }
 

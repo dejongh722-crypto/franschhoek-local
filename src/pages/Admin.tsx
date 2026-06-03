@@ -22,6 +22,7 @@ import {
   Copy,
   ChevronDown,
   RefreshCw,
+  MessagesSquare,
   type LucideIcon,
 } from "lucide-react";
 import { analytics, monthlyRevenue, zar } from "@/data/analytics";
@@ -34,6 +35,7 @@ import { initials } from "@/data/chat";
 import { isPromoLive, usePromotions, type Audience, type Promotion } from "@/store/promotions";
 import { useEvents } from "@/store/events";
 import { useDeals } from "@/store/deals";
+import { useCommunityGroups } from "@/store/communityGroups";
 import { useToast } from "@/store/toast";
 import { supabase, type ProfileRow } from "@/lib/supabase";
 import {
@@ -597,6 +599,9 @@ export function Admin() {
         {/* Manage deals */}
         <DealsManager />
 
+        {/* Manage community groups */}
+        <GroupsManager />
+
         {/* Users */}
         <section>
           <h2 className="mb-1 font-display text-lg font-semibold text-ink">Users</h2>
@@ -1077,6 +1082,79 @@ function DealsManager() {
             sub={`${d.venue} · ${d.discount} · until ${d.validUntil ? formatValidUntil(d.validUntil) : "—"}`}
             onDelete={async () => {
               const { error } = await removeDeal(d.id);
+              if (error) toast(error);
+            }}
+          />
+        ))}
+      </div>
+    </Collapsible>
+  );
+}
+
+function GroupsManager() {
+  const { groups, addGroup, removeGroup } = useCommunityGroups();
+  const toast = useToast();
+  const empty = { name: "", categorySlug: categories[0].slug, description: "", inviteUrl: "" };
+  const [form, setForm] = useState(empty);
+  const [saving, setSaving] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim()) return toast("Add a group name");
+    if (!/^https:\/\/chat\.whatsapp\.com\//.test(form.inviteUrl.trim())) {
+      return toast("Paste a valid WhatsApp invite link (chat.whatsapp.com/…)");
+    }
+    setSaving(true);
+    const { error } = await addGroup({
+      name: form.name.trim(),
+      categorySlug: form.categorySlug,
+      description: form.description.trim(),
+      inviteUrl: form.inviteUrl.trim(),
+      active: true,
+    });
+    setSaving(false);
+    if (error) return toast(error);
+    toast("Group added");
+    setForm(empty);
+  };
+
+  return (
+    <Collapsible
+      icon={MessagesSquare}
+      title={`Community groups (${groups.length})`}
+      subtitle="Public WhatsApp group invite links shown on the Community page."
+    >
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+        <Field label="Group name">
+          <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Franschhoek Foodies" />
+        </Field>
+        <Field label="Category">
+          <select className="input" value={form.categorySlug} onChange={(e) => setForm({ ...form, categorySlug: e.target.value })}>
+            {categories.map((c) => (
+              <option key={c.slug} value={c.slug}>{c.name}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="WhatsApp invite link">
+          <input className="input" value={form.inviteUrl} onChange={(e) => setForm({ ...form, inviteUrl: e.target.value })} placeholder="https://chat.whatsapp.com/…" />
+        </Field>
+        <Field label="Description (optional)">
+          <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Local food lovers sharing tips & specials" />
+        </Field>
+        <button type="submit" disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-full bg-wine py-3 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
+          <Plus className="h-4 w-4" strokeWidth={2.5} />
+          {saving ? "Adding…" : "Add group"}
+        </button>
+      </form>
+
+      <div className="mt-3 space-y-2">
+        {groups.map((g) => (
+          <ManageRow
+            key={g.id}
+            title={g.name}
+            sub={g.inviteUrl}
+            onDelete={async () => {
+              const { error } = await removeGroup(g.id);
               if (error) toast(error);
             }}
           />

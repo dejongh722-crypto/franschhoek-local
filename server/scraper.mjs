@@ -288,12 +288,20 @@ async function processSource(src, acc) {
     if (mapped.kind === "venue" && kinds.includes("venue")) venues.push(mapped.item);
   }
 
-  // 2) Claude fallback when structured data is thin.
-  if (events.length + venues.length + deals.length < 3) {
+  // 2) Claude fallback to fill any kind the source asked for but structured data
+  //    missed (e.g. a winery page yielded venues via JSON-LD but no events/deals).
+  const missingKind =
+    (kinds.includes("venue") && venues.length === 0) ||
+    (kinds.includes("event") && events.length === 0) ||
+    (kinds.includes("deal") && deals.length === 0);
+  if (anthropic && missingKind) {
     const ai = await aiExtract(category, url, htmlToText(html));
-    if (kinds.includes("venue")) venues.push(...ai.venues.map((v) => ({ ...v, categorySlug: category })));
-    if (kinds.includes("event")) events.push(...ai.events.map((e) => ({ ...e, categorySlug: category })));
-    if (kinds.includes("deal")) deals.push(...ai.deals.map((d) => ({ ...d, categorySlug: category })));
+    if (kinds.includes("venue") && venues.length === 0)
+      venues.push(...ai.venues.map((v) => ({ ...v, categorySlug: category })));
+    if (kinds.includes("event") && events.length === 0)
+      events.push(...ai.events.map((e) => ({ ...e, categorySlug: category })));
+    if (kinds.includes("deal") && deals.length === 0)
+      deals.push(...ai.deals.map((d) => ({ ...d, categorySlug: category })));
   }
 
   // 3) Public community group links (not chat content — just openly-posted invites).

@@ -20,29 +20,31 @@
 
 /** @type {Source[]} */
 export const SOURCES = [
-  // ── Events (calendars / listing pages) ─────────────────────────────
-  { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event"] },
-
   // ── Wineries ───────────────────────────────────────────────────────
+  // Asking for venue+event+deal means the AI fallback also pulls any events /
+  // specials mentioned on the page, not just the venue listings.
   { url: "https://www.franschhoek.org.za/wine/", category: "wineries", kinds: ["venue", "event", "deal"] },
 
   // ── Restaurants ────────────────────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/restaurants/", category: "restaurants", kinds: ["venue", "deal"] },
-
-  // ── Coffee ─────────────────────────────────────────────────────────
-  // { url: "https://example-coffee-directory/franschhoek", category: "coffee", kinds: ["venue"] },
+  { url: "https://www.franschhoek.org.za/restaurants/", category: "restaurants", kinds: ["venue", "event", "deal"] },
 
   // ── Hotels / stays ─────────────────────────────────────────────────
   { url: "https://www.franschhoek.org.za/accommodation/", category: "hotels", kinds: ["venue", "deal"] },
 
+  // ── Events (dedicated calendar/listing page) ───────────────────────
+  { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event"] },
+
+  // ── Adventure / things to do ───────────────────────────────────────
+  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["venue", "event"] },
+
   // ── Art ────────────────────────────────────────────────────────────
   { url: "https://www.franschhoek.org.za/art-galleries/", category: "art", kinds: ["venue", "event"] },
 
-  // ── Adventure ──────────────────────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["venue", "event"] },
-
-  // ── Padel ──────────────────────────────────────────────────────────
-  // { url: "https://example-padel-club/franschhoek", category: "padel", kinds: ["venue", "event"] },
+  // ── Coffee & Padel ─────────────────────────────────────────────────
+  // No reliable directory page yet — add the specific pages you want here, e.g.
+  // a roaster's site (coffee) or a padel club's bookings/events page.
+  // { url: "https://<coffee-spot>/franschhoek", category: "coffee", kinds: ["venue"] },
+  // { url: "https://<padel-club>/franschhoek", category: "padel", kinds: ["venue", "event"] },
 ];
 
 /**

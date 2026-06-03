@@ -10,6 +10,7 @@ import { MembershipProvider } from "@/store/membership";
 import { EventsProvider } from "@/store/events";
 import { DealsProvider } from "@/store/deals";
 import { VenuesProvider } from "@/store/venues";
+import { CommunityGroupsProvider } from "@/store/communityGroups";
 import { ChatProvider } from "@/store/chat";
 import { ToastProvider } from "@/store/toast";
 import { ProfileProvider } from "@/store/profile";
@@ -62,6 +63,7 @@ export default function App() {
                 <EventsProvider>
                 <DealsProvider>
                 <VenuesProvider>
+                <CommunityGroupsProvider>
                 <UserEventsProvider>
                   <ChatProvider>
                     <SyncProfile />
@@ -93,6 +95,7 @@ export default function App() {
                     </Suspense>
                   </ChatProvider>
                 </UserEventsProvider>
+                </CommunityGroupsProvider>
                 </VenuesProvider>
                 </DealsProvider>
                 </EventsProvider>
