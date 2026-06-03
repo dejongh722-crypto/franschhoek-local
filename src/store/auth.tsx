@@ -21,6 +21,8 @@ interface AuthContextValue {
   signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error?: string }>;
+  updatePassword: (password: string) => Promise<{ error?: string }>;
   refreshProfile: () => Promise<void>;
   updateProfile: (patch: ProfilePatch) => Promise<void>;
 }
@@ -84,6 +86,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async signOut() {
         await supabase?.auth.signOut();
+      },
+      async resetPassword(email) {
+        if (!supabase) return { error: "Supabase is not configured." };
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/update-password`,
+        });
+        return error ? { error: error.message } : {};
+      },
+      async updatePassword(password) {
+        if (!supabase) return { error: "Supabase is not configured." };
+        const { error } = await supabase.auth.updateUser({ password });
+        return error ? { error: error.message } : {};
       },
       async refreshProfile() {
         if (user) await loadProfile(user.id);

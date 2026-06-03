@@ -23,13 +23,17 @@ export const SOURCES = [
   // ── Wineries ───────────────────────────────────────────────────────
   // Asking for venue+event+deal means the AI fallback also pulls any events /
   // specials mentioned on the page, not just the venue listings.
-  { url: "https://www.franschhoek.org.za/wine/", category: "wineries", kinds: ["venue", "event", "deal"] },
+  { url: "https://www.franschhoek.org.za/wineries/", category: "wineries", kinds: ["venue", "event", "deal"] },
 
   // ── Restaurants ────────────────────────────────────────────────────
   { url: "https://www.franschhoek.org.za/restaurants/", category: "restaurants", kinds: ["venue", "event", "deal"] },
 
   // ── Hotels / stays ─────────────────────────────────────────────────
+  // The org.za /accommodation/ index renders its listings via JS, so individual
+  // property sites (which carry real text / schema.org) are added directly.
   { url: "https://www.franschhoek.org.za/accommodation/", category: "hotels", kinds: ["venue", "deal"] },
+  { url: "https://fch.co.za/", category: "hotels", kinds: ["venue", "deal"] },
+  { url: "https://dreamresorts.co.za/hotels-resorts/le-franschhoek-hotel-spa/explore/", category: "hotels", kinds: ["venue", "deal"] },
 
   // ── Events (dedicated calendar/listing page) ───────────────────────
   { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event"] },
@@ -38,7 +42,7 @@ export const SOURCES = [
   { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["venue", "event"] },
 
   // ── Art ────────────────────────────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/art-galleries/", category: "art", kinds: ["venue", "event"] },
+  { url: "https://www.franschhoek.org.za/art/", category: "art", kinds: ["venue", "event"] },
 
   // ── Coffee & Padel ─────────────────────────────────────────────────
   // No reliable directory page yet — add the specific pages you want here, e.g.

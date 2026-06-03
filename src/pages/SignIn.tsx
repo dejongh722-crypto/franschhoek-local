@@ -7,8 +7,8 @@ import { useToast } from "@/store/toast";
 export function SignIn() {
   const navigate = useNavigate();
   const toast = useToast();
-  const { configured, signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const { configured, signIn, signUp, resetPassword } = useAuth();
+  const [mode, setMode] = useState<"in" | "up" | "forgot">("in");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +16,24 @@ export function SignIn() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (mode === "forgot") {
+      if (!email.trim()) {
+        toast("Enter your email");
+        return;
+      }
+      setBusy(true);
+      const result = await resetPassword(email.trim());
+      setBusy(false);
+      if (result.error) {
+        toast(result.error);
+        return;
+      }
+      toast("If that email exists, a reset link is on its way");
+      setMode("in");
+      return;
+    }
+
     if (!email.trim() || !password) {
       toast("Enter your email and password");
       return;
@@ -37,6 +55,15 @@ export function SignIn() {
     navigate("/profile");
   };
 
+  const heading =
+    mode === "in" ? "Welcome back" : mode === "up" ? "Create account" : "Reset password";
+  const subheading =
+    mode === "in"
+      ? "Sign in to your Franschhoek Local account."
+      : mode === "up"
+        ? "Join Franschhoek Local."
+        : "Enter your email and we'll send you a reset link.";
+
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-md flex-col bg-sand">
       <header className="bg-gradient-to-br from-wine via-wine to-wine-deep px-5 pb-10 pt-[calc(env(safe-area-inset-top)+1rem)] text-white">
@@ -47,12 +74,8 @@ export function SignIn() {
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={2} />
         </button>
-        <h1 className="mt-5 font-display text-3xl font-semibold">
-          {mode === "in" ? "Welcome back" : "Create account"}
-        </h1>
-        <p className="mt-1 text-sm text-white/75">
-          {mode === "in" ? "Sign in to your Franschhoek Local account." : "Join Franschhoek Local."}
-        </p>
+        <h1 className="mt-5 font-display text-3xl font-semibold">{heading}</h1>
+        <p className="mt-1 text-sm text-white/75">{subheading}</p>
       </header>
 
       <div className="px-5 py-6">
@@ -83,16 +106,30 @@ export function SignIn() {
               className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
             />
           </FieldIcon>
-          <FieldIcon icon={Lock}>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
-              autoComplete={mode === "in" ? "current-password" : "new-password"}
-              className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
-            />
-          </FieldIcon>
+          {mode !== "forgot" && (
+            <FieldIcon icon={Lock}>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                autoComplete={mode === "in" ? "current-password" : "new-password"}
+                className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted"
+              />
+            </FieldIcon>
+          )}
+
+          {mode === "in" && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setMode("forgot")}
+                className="text-sm font-medium text-wine"
+              >
+                Forgot password?
+              </button>
+            </div>
+          )}
 
           <button
             type="submit"
@@ -100,19 +137,28 @@ export function SignIn() {
             className="flex w-full items-center justify-center gap-2 rounded-full bg-wine py-3.5 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-50"
           >
             {busy && <Loader2 className="h-4 w-4 animate-spin" strokeWidth={2} />}
-            {mode === "in" ? "Sign in" : "Create account"}
+            {mode === "in" ? "Sign in" : mode === "up" ? "Create account" : "Send reset link"}
           </button>
         </form>
 
-        <p className="mt-5 text-center text-sm text-muted">
-          {mode === "in" ? "New here?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => setMode(mode === "in" ? "up" : "in")}
-            className="font-semibold text-wine"
-          >
-            {mode === "in" ? "Create an account" : "Sign in"}
-          </button>
-        </p>
+        {mode === "forgot" ? (
+          <p className="mt-5 text-center text-sm text-muted">
+            Remembered it?{" "}
+            <button onClick={() => setMode("in")} className="font-semibold text-wine">
+              Back to sign in
+            </button>
+          </p>
+        ) : (
+          <p className="mt-5 text-center text-sm text-muted">
+            {mode === "in" ? "New here?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => setMode(mode === "in" ? "up" : "in")}
+              className="font-semibold text-wine"
+            >
+              {mode === "in" ? "Create an account" : "Sign in"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );

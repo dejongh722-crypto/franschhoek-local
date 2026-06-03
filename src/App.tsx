@@ -35,6 +35,7 @@ const Membership = lazy(() => import("@/pages/Membership").then((m) => ({ defaul
 const Notifications = lazy(() => import("@/pages/Notifications").then((m) => ({ default: m.Notifications })));
 const Admin = lazy(() => import("@/pages/Admin").then((m) => ({ default: m.Admin })));
 const SignIn = lazy(() => import("@/pages/SignIn").then((m) => ({ default: m.SignIn })));
+const UpdatePassword = lazy(() => import("@/pages/UpdatePassword").then((m) => ({ default: m.UpdatePassword })));
 const Privacy = lazy(() => import("@/pages/Privacy").then((m) => ({ default: m.Privacy })));
 const NotFound = lazy(() => import("@/pages/NotFound").then((m) => ({ default: m.NotFound })));
 
@@ -89,6 +90,7 @@ export default function App() {
                         </Route>
                         {/* Full-screen pages (no tab bar) */}
                         <Route path="/signin" element={<SignIn />} />
+                        <Route path="/update-password" element={<UpdatePassword />} />
                         <Route path="/community/ask" element={<AskAssistant />} />
                         <Route path="/community/:eventId" element={<ChatThread />} />
                       </Routes>
