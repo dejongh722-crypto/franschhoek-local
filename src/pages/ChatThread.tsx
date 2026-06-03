@@ -64,7 +64,8 @@ export function ChatThread() {
   const hostName = isGeneral ? GENERAL_HOST : event?.venue;
   const hasChat = isGeneral || !!event?.hasChat;
   const attending = event ? isAttending(event.id) : false;
-  const canChat = isPremium && hasChat && (isGeneral || attending);
+  // General Community is free; event chats require Premium + RSVP.
+  const canChat = hasChat && (isGeneral || (isPremium && attending));
   const messages = canChat && threadId ? getMessages(threadId, hostName) : [];
   const byId = new Map(messages.map((m) => [m.id, m]));
   const pinned = messages.find((m) => m.pinned);
@@ -138,10 +139,14 @@ export function ChatThread() {
           <img src={image} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white/30" />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-sm font-semibold">{title}</h1>
-            <p className="flex items-center gap-1.5 text-[11px] text-white/70">
-              <Crown className="h-3 w-3 text-cta" strokeWidth={2.5} />
-              Premium chat
-            </p>
+            {isGeneral ? (
+              <p className="text-[11px] text-white/70">Open to all members</p>
+            ) : (
+              <p className="flex items-center gap-1.5 text-[11px] text-white/70">
+                <Crown className="h-3 w-3 text-cta" strokeWidth={2.5} />
+                Premium chat
+              </p>
+            )}
           </div>
         </div>
 
@@ -173,7 +178,7 @@ export function ChatThread() {
         )}
       </header>
 
-      {!isPremium ? (
+      {!isGeneral && !isPremium ? (
         <Blocked
           icon={Lock}
           title="Premium members only"

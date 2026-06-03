@@ -39,11 +39,8 @@ export function Community() {
         </section>
       )}
 
-      {!isPremium ? (
-        <Gate onUpgrade={() => navigate("/membership")} />
-      ) : (
-        <div className="space-y-7 px-5 py-5">
-          {/* Open to everyone: general room + help assistant */}
+      <div className="space-y-7 px-5 py-5">
+          {/* Open to everyone (free): general room + help assistant */}
           <section className="space-y-3">
             <h2 className="text-xs font-bold uppercase tracking-wide text-muted">Open to all members</h2>
             <button
@@ -91,10 +88,12 @@ export function Community() {
             </button>
           </section>
 
-          {/* Event chats */}
+          {/* Event chats — premium */}
           <section>
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-muted">Your event chats</h2>
-            {myChats.length > 0 ? (
+            {!isPremium ? (
+              <Gate onUpgrade={() => navigate("/membership")} />
+            ) : myChats.length > 0 ? (
               <div className="space-y-3">
                 {myChats.map((event) => {
                   const last = getLastMessage(event.id, event.venue);
@@ -123,8 +122,7 @@ export function Community() {
               <Steps onBrowse={() => navigate("/events")} />
             )}
           </section>
-        </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -162,7 +160,7 @@ function GroupCard({ group }: { group: CommunityGroup }) {
 
 function Gate({ onUpgrade }: { onUpgrade: () => void }) {
   return (
-    <div className="px-5 py-10">
+    <div className="py-1">
       <div className="mx-auto max-w-sm rounded-3xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
         <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-wine/10 text-wine">
           <Lock className="h-6 w-6" strokeWidth={1.75} />
@@ -171,10 +169,10 @@ function Gate({ onUpgrade }: { onUpgrade: () => void }) {
           <Crown className="h-4 w-4" strokeWidth={2} />
           <span className="text-[11px] font-bold uppercase tracking-[0.18em]">Premium</span>
         </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold text-ink">Join the community</h2>
+        <h2 className="mt-1 font-display text-2xl font-semibold text-ink">Event chats are Premium</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          Community chat is a Premium perk. Upgrade to join the general room and chat with attendees of
-          your events.
+          The general room and the assistant are free for everyone. Go Premium to join the community
+          chat for events you're attending.
         </p>
         <button
           onClick={onUpgrade}
