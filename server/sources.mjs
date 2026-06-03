@@ -20,37 +20,12 @@
 
 /** @type {Source[]} */
 export const SOURCES = [
-  // ── Wineries ───────────────────────────────────────────────────────
-  // Asking for venue+event+deal means the AI fallback also pulls any events /
-  // specials mentioned on the page, not just the venue listings.
-  { url: "https://www.franschhoek.org.za/wineries/", category: "wineries", kinds: ["venue", "event", "deal"] },
-
-  // ── Restaurants ────────────────────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/restaurants/", category: "restaurants", kinds: ["venue", "event", "deal"] },
-
-  // ── Hotels / stays ─────────────────────────────────────────────────
-  // The org.za /accommodation/ index renders its listings via JS, so individual
-  // property sites (which carry real text / schema.org) are added directly.
-  { url: "https://www.franschhoek.org.za/accommodation/", category: "hotels", kinds: ["venue", "deal"] },
-  { url: "https://fch.co.za/", category: "hotels", kinds: ["venue", "deal"] },
-  { url: "https://dreamresorts.co.za/hotels-resorts/le-franschhoek-hotel-spa/explore/", category: "hotels", kinds: ["venue", "deal"] },
-
-  // ── Events (dedicated calendar/listing page) ───────────────────────
+  // Venues are curated and admin-managed (real photos + descriptions), so the
+  // scraper focuses on EVENTS — festivals & happenings. It only keeps upcoming
+  // events and never touches venues, so it won't overwrite curated/admin edits.
+  // Add more event/calendar pages here as you find them.
   { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event"] },
-
-  // ── Adventure / things to do ───────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["venue", "event"] },
-
-  // ── Art ────────────────────────────────────────────────────────────
-  { url: "https://www.franschhoek.org.za/art/", category: "art", kinds: ["venue", "event"] },
-
-  // ── Coffee ─────────────────────────────────────────────────────────
-  { url: "https://www.terbodore.com/", category: "coffee", kinds: ["venue"] },
-
-  // ── Padel ──────────────────────────────────────────────────────────
-  // No reliable Franschhoek padel site yet — add a club's page here when one exists.
-  // Until then, padel venues are added manually via the Admin panel.
-  // { url: "https://<padel-club>/franschhoek", category: "padel", kinds: ["venue", "event"] },
+  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["event"] },
 ];
 
 /**
