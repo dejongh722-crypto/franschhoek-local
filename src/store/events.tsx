@@ -9,6 +9,7 @@ import {
 } from "react";
 import { supabase } from "@/lib/supabase";
 import { events as seedEvents, byDate, type AppEvent } from "@/data/events";
+import { categoryImage } from "@/data/categories";
 import type { WriteResult } from "@/store/promotions";
 
 const FEATURED_IDS = ["sunset-wine-tasting", "harvest-long-table", "live-jazz-tapas", "cellar-barrel-tasting"];
@@ -46,7 +47,8 @@ function fromRow(r: EventRow): AppEvent {
     venue: r.venue ?? "",
     categorySlug: r.category_slug ?? "",
     date: r.date ?? "",
-    image: r.image ?? "",
+    // Scraped events rarely carry an image — show a relevant category photo instead of a blank.
+    image: r.image || categoryImage(r.category_slug ?? ""),
     isPremium: r.is_premium,
     price: r.price ?? "Free",
     hasChat: r.has_chat,

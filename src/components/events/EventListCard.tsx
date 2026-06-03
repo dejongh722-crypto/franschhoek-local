@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Crown, Heart, Clock, MessagesSquare } from "lucide-react";
-import { categoryBySlug } from "@/data/categories";
+import { categoryBySlug, categoryImage } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
 import { useUserEvents } from "@/store/userEvents";
 import { useToast } from "@/store/toast";
@@ -21,7 +21,15 @@ export function EventListCard({ event }: { event: AppEvent }) {
       className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
     >
       <div className="relative h-40">
-        <img src={event.image} alt={event.title} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={event.image}
+          alt={event.title}
+          onError={(e) => {
+            const fb = categoryImage(event.categorySlug);
+            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
 
         <div className="absolute left-3 top-3 rounded-xl bg-white/90 px-2.5 py-1 text-center shadow-sm backdrop-blur">

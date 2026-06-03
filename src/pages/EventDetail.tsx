@@ -11,7 +11,7 @@ import {
   Lock,
   MessagesSquare,
 } from "lucide-react";
-import { categoryBySlug } from "@/data/categories";
+import { categoryBySlug, categoryImage } from "@/data/categories";
 import { formatEventDateLong, formatEventTime } from "@/data/events";
 import { useEvents } from "@/store/events";
 import { useUserEvents } from "@/store/userEvents";
@@ -56,7 +56,15 @@ export function EventDetail() {
     <div className="pb-8">
       {/* Image header */}
       <div className="relative h-72">
-        <img src={event.image} alt={event.title} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={event.image}
+          alt={event.title}
+          onError={(e) => {
+            const fb = categoryImage(event.categorySlug);
+            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
 
         <div className="relative flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)]">

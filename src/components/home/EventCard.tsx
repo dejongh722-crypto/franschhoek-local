@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Crown } from "lucide-react";
-import { categoryBySlug } from "@/data/categories";
+import { categoryBySlug, categoryImage } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
 
 export function EventCard({ event }: { event: AppEvent }) {
@@ -15,7 +15,15 @@ export function EventCard({ event }: { event: AppEvent }) {
       className="w-60 shrink-0 snap-start overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.98]"
     >
       <div className="relative h-32">
-        <img src={event.image} alt={event.title} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={event.image}
+          alt={event.title}
+          onError={(e) => {
+            const fb = categoryImage(event.categorySlug);
+            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute left-3 top-3 rounded-xl bg-white/90 px-2.5 py-1 text-center shadow-sm backdrop-blur">
           <div className="text-[10px] font-bold leading-none text-wine">{badge.month}</div>
           <div className="text-sm font-bold leading-tight text-ink">{badge.day}</div>
