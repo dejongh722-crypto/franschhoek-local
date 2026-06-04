@@ -290,9 +290,15 @@ Return STRICT JSON (no markdown) of the shape:
 {
   "venues": [{ "name": "", "imageIndex": -1, "description": "", "address": "", "website": "", "phone": "" }],
   "events": [{ "title": "", "imageIndex": -1, "venue": "", "date": "ISO 8601 if known else empty", "price": "e.g. R250 or Free", "description": "" }],
-  "deals":  [{ "title": "", "imageIndex": -1, "venue": "", "discount": "e.g. 20% OFF", "code": "if any", "validUntil": "ISO date if known else empty", "description": "" }]
+  "deals":  [{ "title": "", "imageIndex": -1, "venue": "", "discount": "the exact saving, e.g. '20% OFF', '2-for-1', 'Free night', 'Stay 3 nights pay 2'", "code": "only a real code printed on the page, else empty", "validUntil": "ISO date if stated else empty", "description": "" }]
 }
 Use empty arrays where there's nothing. Keep descriptions under 60 words.
+
+DEALS RULE: Only include a deal when the page states a SPECIFIC, real saving (a
+percentage, a rand amount, a free item/night, or a clear "X-for-Y" / "stay X pay
+Y"). Put that exact saving in "discount". If a page just says it "has specials"
+without a concrete figure, do NOT include it. Never write a vague "discount" like
+"Offer", "Special" or "Discount", and never invent a code or date.
 
 IMAGES:
 ${imgList}
@@ -330,16 +336,28 @@ ${text}`;
   }
 }
 
-/** Normalize an AI-extracted deal into a `deals` table row.
- *  Codes and end-dates are left null unless genuinely present on the page —
- *  these are "book direct" offers, so we never invent a redemption code. */
+// Generic words that aren't an actual saving — a deal must have a concrete
+// discount (a %, an amount, "2-for-1", "free night", "stay 3 pay 2", …) or we
+// don't show it. No fake "OFFER" placeholders.
+const GENERIC_DISCOUNT = /^(offer|deal|special|specials|promotion|promo|discount|save|various|multiple benefits|see (website|venue|store)|n\/?a|-)?$/i;
+
+/** True only when `discount` states a real, specific saving. */
+function isRealDiscount(s) {
+  const v = String(s ?? "").trim();
+  return v.length > 0 && !GENERIC_DISCOUNT.test(v);
+}
+
+/** Normalize an AI-extracted deal into a `deals` table row, or null when it has
+ *  no genuine discount. Codes and end-dates are left null unless actually present
+ *  on the page — these are "book direct" offers, so nothing is invented. */
 function dealRow(d, sourceUrl, category, now) {
+  if (!d.title || !isRealDiscount(d.discount)) return null;
   return {
     id: stableId("del", sourceUrl, d.title),
     title: d.title,
     venue: d.venue || "",
     category_slug: d.categorySlug || category,
-    discount: d.discount || "OFFER",
+    discount: String(d.discount).trim(),
     description: d.description || "",
     code: d.code ? String(d.code).trim() : null,
     valid_until: d.validUntil || null,
@@ -451,10 +469,9 @@ async function processSource(src, acc) {
     });
   }
   for (const d of cap(deals)) {
-    if (!d.title) continue;
     if (isExpiredDeal(d.validUntil)) continue; // only keep currently-valid offers
     const row = dealRow(d, url, category, now);
-    acc.deals.set(row.id, row);
+    if (row) acc.deals.set(row.id, row); // dealRow drops anything without a real discount
   }
   for (const g of groups) {
     acc.groups.set(g.invite_url, {
@@ -544,7 +561,6 @@ async function scrapeVenueDeals(acc) {
 
       let kept = 0;
       for (const d of ai.deals.slice(0, MAX_ITEMS_PER_SOURCE)) {
-        if (!d.title) continue;
         if (isExpiredDeal(d.validUntil)) continue;
         const row = dealRow(
           { ...d, venue: d.venue || v.name, categorySlug: v.category_slug },
@@ -552,6 +568,7 @@ async function scrapeVenueDeals(acc) {
           v.category_slug,
           now,
         );
+        if (!row) continue; // no genuine discount → don't show it
         if (!row.image && ogImage) row.image = ogImage;
         acc.deals.set(row.id, row);
         kept++;
