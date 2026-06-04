@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { CalendarDays, ChevronRight } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
+import { imgFallback } from "@/lib/img";
 
 export function EventRow({ event }: { event: AppEvent }) {
   const navigate = useNavigate();
@@ -15,10 +16,7 @@ export function EventRow({ event }: { event: AppEvent }) {
       <img
         src={event.image}
         alt={event.title}
-        onError={(e) => {
-          const fb = categoryImage(event.categorySlug, event.id);
-          if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-        }}
+        onError={imgFallback(event.categorySlug, event.id)}
         className="h-16 w-16 shrink-0 rounded-xl object-cover"
       />
       <div className="min-w-0 flex-1">

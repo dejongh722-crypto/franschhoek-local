@@ -16,6 +16,7 @@ import {
 import { categoryBySlug } from "@/data/categories";
 import { formatValidUntil } from "@/data/deals";
 import { useDeals } from "@/store/deals";
+import { imgFallback } from "@/lib/img";
 import { useMembership } from "@/store/membership";
 import { useToast } from "@/store/toast";
 import { share } from "@/lib/share";
@@ -79,7 +80,12 @@ export function DealDetail() {
     <div className="pb-8">
       {/* Image header */}
       <div className="relative h-64">
-        <img src={deal.image} alt={deal.title} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={deal.image}
+          alt={deal.title}
+          onError={imgFallback(deal.categorySlug, deal.id)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
 
         <div className="relative flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)]">

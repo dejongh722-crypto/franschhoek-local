@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-label="Franschhoek Local">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9c4452"/>
+      <stop offset="1" stop-color="#5c1f2a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <!-- vineyard hills motif -->
+  <path d="M0 470 C 160 410 280 470 400 450 C 540 426 640 470 800 430 L800 600 L0 600 Z" fill="#ffffff" opacity="0.10"/>
+  <path d="M0 520 C 180 470 300 520 440 505 C 600 488 700 520 800 495 L800 600 L0 600 Z" fill="#ffffff" opacity="0.08"/>
+  <!-- image glyph -->
+  <g transform="translate(355,235)" fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="90" height="72" rx="10"/>
+    <circle cx="26" cy="26" r="11"/>
+    <path d="M6 64 L34 40 L52 56 L70 42 L84 54"/>
+  </g>
+  <text x="400" y="360" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#ffffff" fill-opacity="0.8">Franschhoek Local</text>
+</svg>

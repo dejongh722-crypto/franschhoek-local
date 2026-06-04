@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Crown } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
 import { useVenues } from "@/store/venues";
 import { StarRating } from "@/components/StarRating";
+import { imgFallback } from "@/lib/img";
 
 export function EventCard({ event }: { event: AppEvent }) {
   const navigate = useNavigate();
@@ -21,10 +22,7 @@ export function EventCard({ event }: { event: AppEvent }) {
         <img
           src={event.image}
           alt={event.title}
-          onError={(e) => {
-            const fb = categoryImage(event.categorySlug, event.id);
-            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-          }}
+          onError={imgFallback(event.categorySlug, event.id)}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute left-3 top-3 rounded-xl bg-card/90 px-2.5 py-1 text-center shadow-sm ring-1 ring-line backdrop-blur">

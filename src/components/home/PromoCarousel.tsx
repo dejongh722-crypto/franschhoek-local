@@ -5,6 +5,7 @@ import { isPromoLive, usePromotions } from "@/store/promotions";
 import { useMembership } from "@/store/membership";
 import { trackPromoClick } from "@/lib/promoMetrics";
 import { followLink } from "@/lib/links";
+import { imgFallback } from "@/lib/img";
 
 /**
  * Permanent featured rail of live, audience-targeted promotions on Home.
@@ -38,7 +39,7 @@ export function PromoCarousel() {
           className="group relative h-44 w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl text-left shadow-md ring-1 ring-line transition-transform active:scale-[0.99]"
         >
           {promo.image ? (
-            <img src={promo.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img src={promo.image} alt="" onError={imgFallback(undefined, promo.id)} className="absolute inset-0 h-full w-full object-cover" />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-wine via-wine-soft to-wine-deep" />
           )}

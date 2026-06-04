@@ -6,6 +6,7 @@ import { useKnowledge } from "@/store/knowledge";
 import { useMembership } from "@/store/membership";
 import { useToast } from "@/store/toast";
 import { share } from "@/lib/share";
+import { imgFallback } from "@/lib/img";
 
 export function KnowledgeDetail() {
   const { id } = useParams();
@@ -37,7 +38,12 @@ export function KnowledgeDetail() {
     <div className="pb-12">
       {/* Image header */}
       <div className="relative h-64">
-        <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover" />
+        <img
+          src={post.image}
+          alt={post.title}
+          onError={imgFallback(post.categorySlug, post.id)}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
 
         <div className="relative flex items-center justify-between px-5 pt-[calc(env(safe-area-inset-top)+1rem)]">

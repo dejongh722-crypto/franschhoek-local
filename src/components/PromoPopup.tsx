@@ -4,6 +4,7 @@ import { isPromoLive, usePromotions } from "@/store/promotions";
 import { useMembership } from "@/store/membership";
 import { trackPromoClick } from "@/lib/promoMetrics";
 import { followLink } from "@/lib/links";
+import { imgFallback } from "@/lib/img";
 
 /** Shows the newest live promotion the user hasn't dismissed, as a pop-up. */
 export function PromoPopup() {
@@ -29,7 +30,7 @@ export function PromoPopup() {
       <div className="animate-rise w-full max-w-sm overflow-hidden rounded-3xl bg-card shadow-2xl">
         <div className="relative">
           {promo.image ? (
-            <img src={promo.image} alt="" className="h-36 w-full object-cover" />
+            <img src={promo.image} alt="" onError={imgFallback(undefined, promo.id)} className="h-36 w-full object-cover" />
           ) : (
             <div className="grid h-24 w-full place-items-center bg-gradient-to-br from-wine to-wine-deep text-white">
               <Megaphone className="h-8 w-8" strokeWidth={1.75} />

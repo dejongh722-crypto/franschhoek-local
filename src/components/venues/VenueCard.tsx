@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { venueImage, type Venue } from "@/data/venues";
 import { StarRating } from "@/components/StarRating";
+import { imgFallback } from "@/lib/img";
 
 export function VenueCard({ venue }: { venue: Venue }) {
   const navigate = useNavigate();
@@ -16,10 +17,7 @@ export function VenueCard({ venue }: { venue: Venue }) {
       <img
         src={venueImage(venue)}
         alt={venue.name}
-        onError={(e) => {
-          const fb = categoryImage(venue.categorySlug, venue.id);
-          if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-        }}
+        onError={imgFallback(venue.categorySlug, venue.id)}
         className="h-20 w-20 shrink-0 rounded-xl object-cover"
       />
       <div className="min-w-0 flex-1">

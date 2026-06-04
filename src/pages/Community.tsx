@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronRight, Users, CalendarPlus, MessageCircle, Bot, MessagesSquare } from "lucide-react";
 import { formatChatTime, GENERAL_ID, ONLINE_COUNT } from "@/data/chat";
 import { categoryBySlug } from "@/data/categories";
+import { imgFallback } from "@/lib/img";
 import { useEvents } from "@/store/events";
 import { useUserEvents } from "@/store/userEvents";
 import { useChat } from "@/store/chat";
@@ -99,7 +100,12 @@ export function Community() {
                       onClick={() => navigate(`/community/${event.id}`)}
                       className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
                     >
-                      <img src={event.image} alt={event.title} className="h-14 w-14 shrink-0 rounded-xl object-cover" />
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        onError={imgFallback(event.categorySlug, event.id)}
+                        className="h-14 w-14 shrink-0 rounded-xl object-cover"
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <h3 className="truncate font-semibold text-ink">{event.title}</h3>

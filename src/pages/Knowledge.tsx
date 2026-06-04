@@ -6,6 +6,7 @@ import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { KnowledgeCard } from "@/components/knowledge/KnowledgeCard";
 import { KnowledgeLocked } from "@/components/knowledge/KnowledgeLocked";
 import { categoryBySlug } from "@/data/categories";
+import { imgFallback } from "@/lib/img";
 import { useKnowledge } from "@/store/knowledge";
 import { useMembership } from "@/store/membership";
 
@@ -77,7 +78,12 @@ export function Knowledge() {
                 onClick={() => navigate(`/knowledge/${featured.id}`)}
                 className="group relative cursor-pointer overflow-hidden rounded-3xl shadow-md transition-transform active:scale-[0.99]"
               >
-                <img src={featured.image} alt={featured.title} className="h-56 w-full object-cover" />
+                <img
+                  src={featured.image}
+                  alt={featured.title}
+                  onError={imgFallback(featured.categorySlug, featured.id)}
+                  className="h-56 w-full object-cover"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5 text-white">
                   {featuredCat && (

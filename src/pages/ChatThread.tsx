@@ -35,6 +35,7 @@ import { useUserEvents } from "@/store/userEvents";
 import { useChat } from "@/store/chat";
 import { useAuth } from "@/store/auth";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { imgFallback } from "@/lib/img";
 import { cn } from "@/lib/utils";
 
 export function ChatThread() {
@@ -134,7 +135,12 @@ export function ChatThread() {
           >
             <ArrowLeft className="h-5 w-5" strokeWidth={2} />
           </button>
-          <img src={image} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white/30" />
+          <img
+            src={image}
+            alt=""
+            onError={imgFallback(event?.categorySlug, event?.id)}
+            className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white/30"
+          />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-sm font-semibold">{title}</h1>
             {isGeneral ? (

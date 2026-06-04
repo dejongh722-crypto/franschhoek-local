@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Clock, ArrowRight } from "lucide-react";
 import { categoryBySlug } from "@/data/categories";
 import { formatPublished, type KnowledgePost } from "@/data/knowledge";
+import { imgFallback } from "@/lib/img";
 
 /** Magazine-style article card for the knowledge list. */
 export function KnowledgeCard({ post }: { post: KnowledgePost }) {
@@ -16,6 +17,7 @@ export function KnowledgeCard({ post }: { post: KnowledgePost }) {
       <img
         src={post.image}
         alt={post.title}
+        onError={imgFallback(post.categorySlug, post.id)}
         className="h-24 w-24 shrink-0 rounded-xl object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col justify-center pr-1">

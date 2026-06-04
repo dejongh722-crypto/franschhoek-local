@@ -4,6 +4,7 @@ import { MapPin, Bell, User } from "lucide-react";
 import { SearchBar } from "./SearchBar";
 import { useProfile } from "@/store/profile";
 import { useNotifications } from "@/store/notifications";
+import { imgFallback } from "@/lib/img";
 
 const HERO_IMG =
   "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=1200&q=70";
@@ -22,6 +23,7 @@ export function Hero() {
         <img
           src={HERO_IMG}
           alt="Franschhoek wine country"
+          onError={imgFallback("wineries", "hero")}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-wine/30 to-wine-deep/80" />

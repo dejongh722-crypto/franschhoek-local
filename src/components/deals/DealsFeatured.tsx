@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Flame, MapPin } from "lucide-react";
 import type { Deal } from "@/data/deals";
+import { imgFallback } from "@/lib/img";
 
 /** Large hero "Deal of the week" card. */
 export function DealsFeatured({ deal }: { deal: Deal }) {
@@ -11,7 +12,12 @@ export function DealsFeatured({ deal }: { deal: Deal }) {
       onClick={() => navigate(`/deals/${deal.id}`)}
       className="relative block h-44 w-full overflow-hidden rounded-3xl text-left shadow-md transition-transform active:scale-[0.99]"
     >
-      <img src={deal.image} alt={deal.title} className="absolute inset-0 h-full w-full object-cover" />
+      <img
+        src={deal.image}
+        alt={deal.title}
+        onError={imgFallback(deal.categorySlug, deal.id)}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
       <span className="absolute right-4 top-4 rounded-xl bg-cta px-3 py-1.5 text-sm font-extrabold uppercase tracking-wide text-white shadow-md">

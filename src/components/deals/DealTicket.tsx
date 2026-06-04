@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, CalendarClock } from "lucide-react";
 import { categoryBySlug } from "@/data/categories";
 import { daysLeftLabel, daysUntil, type Deal } from "@/data/deals";
+import { imgFallback } from "@/lib/img";
 import { cn } from "@/lib/utils";
 
 /** Voucher-style deal card with a perforated, tear-off discount stub. */
@@ -16,7 +17,12 @@ export function DealTicket({ deal }: { deal: Deal }) {
       onClick={() => navigate(`/deals/${deal.id}`)}
       className="relative flex h-28 cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
-      <img src={deal.image} alt={deal.title} className="h-full w-24 shrink-0 object-cover" />
+      <img
+        src={deal.image}
+        alt={deal.title}
+        onError={imgFallback(deal.categorySlug, deal.id)}
+        className="h-full w-24 shrink-0 object-cover"
+      />
 
       <div className="flex min-w-0 flex-1 flex-col justify-center px-3">
         {cat && (

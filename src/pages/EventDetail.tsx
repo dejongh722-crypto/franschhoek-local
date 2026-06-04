@@ -11,8 +11,9 @@ import {
   Lock,
   MessagesSquare,
 } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { formatEventDateLong, formatEventTime } from "@/data/events";
+import { imgFallback } from "@/lib/img";
 import { useEvents } from "@/store/events";
 import { useUserEvents } from "@/store/userEvents";
 import { useVenues } from "@/store/venues";
@@ -63,10 +64,7 @@ export function EventDetail() {
         <img
           src={event.image}
           alt={event.title}
-          onError={(e) => {
-            const fb = categoryImage(event.categorySlug, event.id);
-            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-          }}
+          onError={imgFallback(event.categorySlug, event.id)}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />

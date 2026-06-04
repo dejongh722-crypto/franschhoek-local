@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { MapPin, Crown, Heart, Clock, MessagesSquare } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
 import { useUserEvents } from "@/store/userEvents";
 import { useVenues } from "@/store/venues";
 import { useToast } from "@/store/toast";
 import { StarRating } from "@/components/StarRating";
+import { imgFallback } from "@/lib/img";
 import { cn } from "@/lib/utils";
 
 export function EventListCard({ event }: { event: AppEvent }) {
@@ -28,10 +29,7 @@ export function EventListCard({ event }: { event: AppEvent }) {
         <img
           src={event.image}
           alt={event.title}
-          onError={(e) => {
-            const fb = categoryImage(event.categorySlug, event.id);
-            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-          }}
+          onError={imgFallback(event.categorySlug, event.id)}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />

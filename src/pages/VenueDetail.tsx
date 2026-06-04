@@ -1,7 +1,8 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Share2, MapPin, Navigation, Globe, Phone, Star } from "lucide-react";
-import { categoryBySlug, categoryImage } from "@/data/categories";
+import { categoryBySlug } from "@/data/categories";
 import { venueImage, type Review } from "@/data/venues";
+import { imgFallback } from "@/lib/img";
 import { useVenues } from "@/store/venues";
 import { useToast } from "@/store/toast";
 import { share } from "@/lib/share";
@@ -48,10 +49,7 @@ export function VenueDetail() {
         <img
           src={venueImage(venue)}
           alt={venue.name}
-          onError={(e) => {
-            const fb = categoryImage(venue.categorySlug, venue.id);
-            if (e.currentTarget.src !== fb) e.currentTarget.src = fb;
-          }}
+          onError={imgFallback(venue.categorySlug, venue.id)}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30" />
