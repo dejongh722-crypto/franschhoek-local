@@ -18,6 +18,19 @@
       rel="stylesheet"
     />
     <title>Franschhoek Local</title>
+    <script>
+      // Apply the saved (or OS-preferred) theme before paint to avoid a flash.
+      (function () {
+        try {
+          var t = localStorage.getItem("fl.theme.v1");
+          if (t !== "light" && t !== "dark") {
+            t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          if (t === "dark") document.documentElement.classList.add("dark");
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

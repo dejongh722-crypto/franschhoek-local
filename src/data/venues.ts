@@ -3,6 +3,17 @@
 
 import { categoryImage } from "@/data/categories";
 
+/** A single real review (from Google Places). Text and attribution are shown
+ *  unmodified, as Google's terms require. */
+export interface Review {
+  author: string;
+  rating: number;
+  text: string;
+  relativeTime: string;
+  profilePhoto?: string;
+  uri?: string;
+}
+
 export interface Venue {
   id: string;
   name: string;
@@ -12,6 +23,11 @@ export interface Venue {
   image: string;
   website: string;
   phone: string;
+  /** Real Google rating (1–5), total review count, and a few review snippets.
+   *  Undefined until `npm run ratings` has populated them. */
+  rating?: number;
+  ratingCount?: number;
+  reviews?: Review[];
 }
 
 const img = (id: string, w = 800) =>

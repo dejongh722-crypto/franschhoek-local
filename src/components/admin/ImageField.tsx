@@ -32,7 +32,7 @@ export function ImageField({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-3">
-        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-black/5">
+        <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-sand ring-1 ring-line">
           {value ? (
             <img src={value} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -51,7 +51,7 @@ export function ImageField({
           {busy ? "Uploading…" : "Upload photo"}
         </button>
       </div>
-      <label className="flex items-center gap-2 rounded-xl bg-card px-3 py-2 text-sm ring-1 ring-black/10">
+      <label className="flex items-center gap-2 rounded-xl bg-card px-3 py-2 text-sm ring-1 ring-line">
         <Link2 className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.75} />
         <input
           value={value}

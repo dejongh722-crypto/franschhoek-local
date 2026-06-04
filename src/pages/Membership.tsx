@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Crown, Check, Tag, Sparkles, MessagesSquare, BookOpen, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Crown, Check, Tag, Sparkles, BookOpen, ShieldCheck } from "lucide-react";
 import { useMembership, type BillingPlan } from "@/store/membership";
 import { useAuth } from "@/store/auth";
 import { useToast } from "@/store/toast";
@@ -13,7 +13,6 @@ const benefits = [
   { icon: Tag, title: "Local deals", desc: "Exclusive discounts from local businesses." },
   { icon: Sparkles, title: "Premium events", desc: "Access members-only and exclusive events." },
   { icon: BookOpen, title: "Local knowledge", desc: "Insider guides and curated recommendations." },
-  { icon: MessagesSquare, title: "Community chat", desc: "Join per-event chats with fellow attendees." },
 ];
 
 const plans: { id: BillingPlan; label: string; price: string; per: string; note?: string }[] = [
@@ -110,7 +109,7 @@ export function Membership() {
         {/* Benefits */}
         <div className="mt-6 space-y-3">
           {benefits.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+            <div key={title} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-wine/10 text-wine">
                 <Icon className="h-5 w-5" strokeWidth={1.75} />
               </span>
@@ -124,7 +123,7 @@ export function Membership() {
 
         {isPremium ? (
           /* Current member */
-          <div className="mt-7 rounded-3xl bg-card p-6 text-center shadow-sm ring-1 ring-black/5">
+          <div className="mt-7 rounded-3xl bg-card p-6 text-center shadow-sm ring-1 ring-line">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-cat-adventure/10 text-cat-adventure">
               <ShieldCheck className="h-7 w-7" strokeWidth={1.75} />
             </span>

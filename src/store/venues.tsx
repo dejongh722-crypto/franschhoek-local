@@ -8,11 +8,14 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
-import { venues as seedVenues, type Venue } from "@/data/venues";
+import { venues as seedVenues, type Review, type Venue } from "@/data/venues";
 
 interface VenuesContextValue {
   venues: Venue[];
   getVenueById: (id?: string) => Venue | undefined;
+  /** Find a venue by (case-insensitive) name — used to attach a venue's
+   *  rating to events, which reference their venue by name. */
+  getVenueByName: (name?: string) => Venue | undefined;
   updateVenue: (id: string, patch: Partial<Venue>) => Promise<{ error?: string }>;
 }
 
@@ -27,6 +30,9 @@ interface VenueRow {
   image: string | null;
   website: string | null;
   phone: string | null;
+  rating: number | null;
+  rating_count: number | null;
+  reviews: Review[] | null;
 }
 
 function fromRow(r: VenueRow): Venue {
@@ -39,6 +45,9 @@ function fromRow(r: VenueRow): Venue {
     image: r.image ?? "",
     website: r.website ?? "",
     phone: r.phone ?? "",
+    rating: r.rating ?? undefined,
+    ratingCount: r.rating_count ?? undefined,
+    reviews: r.reviews ?? undefined,
   };
 }
 
@@ -97,6 +106,8 @@ export function VenuesProvider({ children }: { children: ReactNode }) {
     () => ({
       venues,
       getVenueById: (id) => venues.find((v) => v.id === id),
+      getVenueByName: (name) =>
+        name ? venues.find((v) => v.name.toLowerCase() === name.toLowerCase()) : undefined,
       updateVenue,
     }),
     [venues, updateVenue],

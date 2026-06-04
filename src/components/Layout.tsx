@@ -34,7 +34,7 @@ export function Layout() {
           <button
             aria-label="Your profile"
             onClick={() => navigate("/profile")}
-            className="pointer-events-auto absolute right-4 top-[calc(env(safe-area-inset-top)+0.75rem)] grid h-9 w-9 place-items-center rounded-full bg-white/80 text-ink shadow-sm ring-1 ring-black/10 backdrop-blur transition-colors hover:bg-card"
+            className="pointer-events-auto absolute right-4 top-[calc(env(safe-area-inset-top)+0.75rem)] grid h-9 w-9 place-items-center rounded-full bg-card/80 text-ink shadow-sm ring-1 ring-line backdrop-blur transition-colors hover:bg-card"
           >
             <User className="h-5 w-5" strokeWidth={2} />
           </button>

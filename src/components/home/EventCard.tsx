@@ -2,17 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, Crown } from "lucide-react";
 import { categoryBySlug, categoryImage } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
+import { useVenues } from "@/store/venues";
+import { StarRating } from "@/components/StarRating";
 
 export function EventCard({ event }: { event: AppEvent }) {
   const navigate = useNavigate();
   const cat = categoryBySlug[event.categorySlug];
   const badge = dateBadge(event.date);
   const Icon = cat?.icon;
+  const venue = useVenues().getVenueByName(event.venue);
 
   return (
     <button
       onClick={() => navigate(`/events/${event.id}`)}
-      className="w-60 shrink-0 snap-start overflow-hidden rounded-2xl bg-card text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.98]"
+      className="w-60 shrink-0 snap-start overflow-hidden rounded-2xl bg-card text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.98]"
     >
       <div className="relative h-32">
         <img
@@ -24,7 +27,7 @@ export function EventCard({ event }: { event: AppEvent }) {
           }}
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute left-3 top-3 rounded-xl bg-white/90 px-2.5 py-1 text-center shadow-sm backdrop-blur">
+        <div className="absolute left-3 top-3 rounded-xl bg-card/90 px-2.5 py-1 text-center shadow-sm ring-1 ring-line backdrop-blur">
           <div className="text-[10px] font-bold leading-none text-wine">{badge.month}</div>
           <div className="text-sm font-bold leading-tight text-ink">{badge.day}</div>
         </div>
@@ -47,6 +50,11 @@ export function EventCard({ event }: { event: AppEvent }) {
           <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
           <span className="truncate">{event.venue}</span>
         </div>
+        {venue?.rating && (
+          <div className="mt-1">
+            <StarRating rating={venue.rating} count={venue.ratingCount} />
+          </div>
+        )}
         <div className="mt-2.5 flex items-center justify-between border-t border-line pt-2.5">
           <span className="text-[11px] text-muted">
             {formatEventDate(event.date)} · {formatEventTime(event.date)}

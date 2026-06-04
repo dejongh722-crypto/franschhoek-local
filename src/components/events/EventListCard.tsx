@@ -3,22 +3,26 @@ import { MapPin, Crown, Heart, Clock, MessagesSquare } from "lucide-react";
 import { categoryBySlug, categoryImage } from "@/data/categories";
 import { dateBadge, formatEventDate, formatEventTime, type AppEvent } from "@/data/events";
 import { useUserEvents } from "@/store/userEvents";
+import { useVenues } from "@/store/venues";
 import { useToast } from "@/store/toast";
+import { StarRating } from "@/components/StarRating";
 import { cn } from "@/lib/utils";
 
 export function EventListCard({ event }: { event: AppEvent }) {
   const navigate = useNavigate();
   const { isSaved, toggleSaved } = useUserEvents();
+  const { getVenueByName } = useVenues();
   const toast = useToast();
   const cat = categoryBySlug[event.categorySlug];
   const badge = dateBadge(event.date);
   const Icon = cat?.icon;
   const saved = isSaved(event.id);
+  const venue = getVenueByName(event.venue);
 
   return (
     <div
       onClick={() => navigate(`/events/${event.id}`)}
-      className="cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
       <div className="relative h-40">
         <img
@@ -32,7 +36,7 @@ export function EventListCard({ event }: { event: AppEvent }) {
         />
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/40 to-transparent" />
 
-        <div className="absolute left-3 top-3 rounded-xl bg-white/90 px-2.5 py-1 text-center shadow-sm backdrop-blur">
+        <div className="absolute left-3 top-3 rounded-xl bg-card/90 px-2.5 py-1 text-center shadow-sm ring-1 ring-line backdrop-blur">
           <div className="text-[10px] font-bold leading-none text-wine">{badge.month}</div>
           <div className="text-base font-bold leading-tight text-ink">{badge.day}</div>
         </div>
@@ -81,6 +85,7 @@ export function EventListCard({ event }: { event: AppEvent }) {
             <Clock className="h-3.5 w-3.5" strokeWidth={1.75} />
             {formatEventDate(event.date)} · {formatEventTime(event.date)}
           </span>
+          {venue?.rating && <StarRating rating={venue.rating} count={venue.ratingCount} />}
         </div>
 
         <div className="mt-3 flex items-center justify-between border-t border-line pt-3">

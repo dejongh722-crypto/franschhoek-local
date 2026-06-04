@@ -24,7 +24,7 @@ export function DealsLocked() {
 
       {/* Gate overlay */}
       <div className="absolute inset-0 grid place-items-center bg-gradient-to-b from-sand/40 via-sand/80 to-sand px-5">
-        <div className="w-full max-w-sm rounded-3xl bg-card p-6 text-center shadow-xl ring-1 ring-black/5">
+        <div className="w-full max-w-sm rounded-3xl bg-card p-6 text-center shadow-xl ring-1 ring-line">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-wine/10 text-wine">
             <Lock className="h-6 w-6" strokeWidth={1.75} />
           </span>

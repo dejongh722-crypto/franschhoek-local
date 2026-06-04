@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { categoryBySlug, categoryImage } from "@/data/categories";
 import { venueImage, type Venue } from "@/data/venues";
+import { StarRating } from "@/components/StarRating";
 
 /** Compact vertical venue card for horizontal showcase rails (Explore page). */
 export function VenueTile({ venue }: { venue: Venue }) {
@@ -11,7 +12,7 @@ export function VenueTile({ venue }: { venue: Venue }) {
   return (
     <button
       onClick={() => navigate(`/venues/${venue.id}`)}
-      className="w-44 shrink-0 snap-start overflow-hidden rounded-2xl bg-card text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.98]"
+      className="w-44 shrink-0 snap-start overflow-hidden rounded-2xl bg-card text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.98]"
     >
       <div className="relative h-28">
         <img
@@ -31,11 +32,15 @@ export function VenueTile({ venue }: { venue: Venue }) {
           </div>
         )}
         <h3 className="mt-0.5 line-clamp-1 font-display text-sm font-semibold text-ink">{venue.name}</h3>
-        {venue.address && (
-          <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted">
-            <MapPin className="h-3 w-3 shrink-0" strokeWidth={1.75} />
-            <span className="line-clamp-1">{venue.address}</span>
-          </p>
+        {venue.rating ? (
+          <StarRating rating={venue.rating} count={venue.ratingCount} className="mt-0.5" />
+        ) : (
+          venue.address && (
+            <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted">
+              <MapPin className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+              <span className="line-clamp-1">{venue.address}</span>
+            </p>
+          )
         )}
       </div>
     </button>

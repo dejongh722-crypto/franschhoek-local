@@ -62,7 +62,7 @@ export function CategoryGrid({ selectable = false, selected = null, onSelect }: 
             <span className="relative">
               <span
                 className={cn(
-                  "grid h-[58px] w-[58px] place-items-center rounded-full shadow-sm ring-1 ring-black/5 transition-transform",
+                  "grid h-[58px] w-[58px] place-items-center rounded-full shadow-sm ring-1 ring-line transition-transform",
                   isActive && "scale-105",
                 )}
                 style={{ backgroundColor: color }}
@@ -71,7 +71,7 @@ export function CategoryGrid({ selectable = false, selected = null, onSelect }: 
               </span>
               {isActive && (
                 <span
-                  className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-card shadow ring-1 ring-black/5"
+                  className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-card shadow ring-1 ring-line"
                   style={{ color }}
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />

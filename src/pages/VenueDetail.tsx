@@ -1,10 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Share2, MapPin, Navigation, Globe, Phone } from "lucide-react";
+import { ArrowLeft, Share2, MapPin, Navigation, Globe, Phone, Star } from "lucide-react";
 import { categoryBySlug, categoryImage } from "@/data/categories";
-import { venueImage } from "@/data/venues";
+import { venueImage, type Review } from "@/data/venues";
 import { useVenues } from "@/store/venues";
 import { useToast } from "@/store/toast";
 import { share } from "@/lib/share";
+import { StarRating } from "@/components/StarRating";
+import { initials } from "@/data/chat";
 
 export function VenueDetail() {
   const { id } = useParams();
@@ -86,9 +88,15 @@ export function VenueDetail() {
         )}
         <h1 className="mt-1.5 font-display text-3xl font-semibold leading-tight text-ink">{venue.name}</h1>
 
+        {venue.rating && (
+          <div className="mt-2">
+            <StarRating rating={venue.rating} count={venue.ratingCount} size="md" />
+          </div>
+        )}
+
         {venue.address && (
           <div className="mt-4 flex items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-black/5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-line">
               <MapPin className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 text-sm font-medium text-ink">{venue.address}</div>
@@ -100,6 +108,30 @@ export function VenueDetail() {
             <h2 className="mt-7 font-display text-lg font-semibold text-ink">About</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted">{venue.description}</p>
           </>
+        )}
+
+        {/* Reviews — real Google data */}
+        {venue.reviews && venue.reviews.length > 0 && (
+          <section className="mt-7">
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold text-ink">Reviews</h2>
+              {venue.rating && (
+                <span className="flex items-center gap-1 text-sm">
+                  <Star className="h-4 w-4 text-cta" strokeWidth={1.75} fill="currentColor" />
+                  <span className="font-semibold text-ink">{venue.rating.toFixed(1)}</span>
+                  {venue.ratingCount ? (
+                    <span className="text-muted">· {venue.ratingCount.toLocaleString()} reviews</span>
+                  ) : null}
+                </span>
+              )}
+            </div>
+            <div className="mt-3 space-y-3">
+              {venue.reviews.map((r, i) => (
+                <ReviewItem key={i} review={r} />
+              ))}
+            </div>
+            <p className="mt-3 text-[11px] text-muted">Ratings &amp; reviews from Google</p>
+          </section>
         )}
 
         {/* Actions */}
@@ -114,7 +146,7 @@ export function VenueDetail() {
           {venue.website && (
             <button
               onClick={openWebsite}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-ink/[0.04]"
             >
               <Globe className="h-4 w-4 text-wine" strokeWidth={2} />
               Visit website
@@ -123,7 +155,7 @@ export function VenueDetail() {
           {venue.phone && (
             <a
               href={`tel:${venue.phone}`}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-ink/[0.04]"
             >
               <Phone className="h-4 w-4 text-wine" strokeWidth={2} />
               {venue.phone}
@@ -131,6 +163,33 @@ export function VenueDetail() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+/** A single Google review. Author, text and time are shown unmodified. */
+function ReviewItem({ review }: { review: Review }) {
+  return (
+    <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
+      <div className="flex items-center gap-3">
+        {review.profilePhoto ? (
+          <img src={review.profilePhoto} alt="" className="h-9 w-9 rounded-full object-cover" />
+        ) : (
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-wine/10 text-xs font-bold text-wine">
+            {initials(review.author)}
+          </span>
+        )}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-ink">{review.author}</p>
+          <div className="flex items-center gap-2">
+            <StarRating rating={review.rating} />
+            <span className="text-[11px] text-muted">{review.relativeTime}</span>
+          </div>
+        </div>
+      </div>
+      {review.text && (
+        <p className="mt-2.5 text-sm leading-relaxed text-muted">{review.text}</p>
+      )}
     </div>
   );
 }

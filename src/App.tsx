@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { SyncProfile } from "@/components/SyncProfile";
 import { ADMIN_ENABLED } from "@/config";
+import { ThemeProvider } from "@/store/theme";
 import { AuthProvider, useAuth } from "@/store/auth";
 import { UserEventsProvider } from "@/store/userEvents";
 import { MembershipProvider } from "@/store/membership";
@@ -57,6 +58,7 @@ function AdminRoute() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <ToastProvider>
       <AuthProvider>
         <ProfileProvider>
@@ -112,5 +114,6 @@ export default function App() {
         </ProfileProvider>
       </AuthProvider>
     </ToastProvider>
+    </ThemeProvider>
   );
 }

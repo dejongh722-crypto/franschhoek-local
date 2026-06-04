@@ -13,7 +13,7 @@ export function DealTicket({ deal }: { deal: Deal }) {
   return (
     <div
       onClick={() => navigate(`/deals/${deal.id}`)}
-      className="relative flex h-28 cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="relative flex h-28 cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
       <img src={deal.image} alt={deal.title} className="h-full w-24 shrink-0 object-cover" />
 

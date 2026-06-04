@@ -180,7 +180,7 @@ export function DealDetail() {
         {/* Directions */}
         <button
           onClick={openDirections}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-ink/[0.04]"
         >
           <Navigation className="h-4 w-4 text-wine" strokeWidth={2} />
           Get directions
@@ -204,7 +204,7 @@ export function DealDetail() {
 function InfoRow({ icon: Icon, label, sub }: { icon: typeof MapPin; label: string; sub?: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-black/5">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-line">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
       <div className="min-w-0">

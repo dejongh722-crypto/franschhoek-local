@@ -114,7 +114,7 @@ export function AskAssistant() {
                     "whitespace-pre-line rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
                     mine
                       ? "rounded-br-md bg-wine text-white"
-                      : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-black/5",
+                      : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-line",
                   )}
                 >
                   {m.body}
@@ -130,7 +130,7 @@ export function AskAssistant() {
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-wine text-white">
               <Bot className="h-4 w-4" strokeWidth={2} />
             </span>
-            <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-line">
               {[0, 0.2, 0.4].map((d) => (
                 <span
                   key={d}

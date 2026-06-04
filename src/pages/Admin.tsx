@@ -289,7 +289,7 @@ export function Admin() {
         {/* Revenue chart */}
         <section>
           <h2 className="mb-3 font-display text-lg font-semibold text-ink">Revenue · last 8 months</h2>
-          <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
             <div className="flex h-40 items-end justify-between gap-2">
               {monthlyRevenue.map((m) => (
                 <div key={m.label} className="flex flex-1 flex-col items-center gap-1.5">
@@ -330,7 +330,7 @@ export function Admin() {
               </button>
             )}
           </div>
-          <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+          <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
             <Field label="Title">
               <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Winter Wine Special 🍷" className="input" />
             </Field>
@@ -441,14 +441,14 @@ export function Admin() {
           <h2 className="mb-3 font-display text-lg font-semibold text-ink">Promotions ({promotions.length})</h2>
           <div className="space-y-3">
             {promotions.length === 0 && (
-              <p className="rounded-2xl border border-dashed border-line bg-white/50 px-4 py-5 text-sm text-muted">
+              <p className="rounded-2xl border border-dashed border-line bg-card/50 px-4 py-5 text-sm text-muted">
                 No promotions yet — create one above.
               </p>
             )}
             {promotions.map((p) => {
               const status = promoStatus(p);
               return (
-                <div key={p.id} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+                <div key={p.id} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="truncate font-semibold text-ink">{p.title}</h3>
@@ -486,7 +486,7 @@ export function Admin() {
                       <button
                         aria-label="Edit promotion"
                         onClick={() => startEdit(p)}
-                        className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-black/5 hover:text-ink"
+                        className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-ink/5 hover:text-ink"
                       >
                         <Pencil className="h-4 w-4" strokeWidth={2} />
                       </button>
@@ -530,14 +530,14 @@ export function Admin() {
 
           <div className="space-y-3">
             {promotions.length === 0 && (
-              <p className="rounded-2xl border border-dashed border-line bg-white/50 px-4 py-5 text-sm text-muted">
+              <p className="rounded-2xl border border-dashed border-line bg-card/50 px-4 py-5 text-sm text-muted">
                 No promotions to measure yet.
               </p>
             )}
             {promotions.map((p) => {
               const m = metrics[p.id] ?? NO_METRICS;
               return (
-                <div key={p.id} className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+                <div key={p.id} className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="min-w-0 flex-1 truncate font-semibold text-ink">{p.title}</h3>
                     <button
@@ -565,7 +565,7 @@ export function Admin() {
           title="Content scraper"
           subtitle="Auto-updates venues, events & deals every 4 hours"
         >
-          <div className="rounded-2xl bg-card p-4 text-sm shadow-sm ring-1 ring-black/5">
+          <div className="rounded-2xl bg-card p-4 text-sm shadow-sm ring-1 ring-line">
             {scrapeRun ? (
               <>
                 <div className="flex items-center justify-between">
@@ -620,7 +620,7 @@ export function Admin() {
           <p className="mb-3 text-[11px] text-muted">
             {usersAreReal ? `${usersList.length} member${usersList.length === 1 ? "" : "s"} (live)` : "Showing recent members (sample data)"}
           </p>
-          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5">
+          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-line">
             {usersList.map((u, i) => (
               <div
                 key={u.email || i}
@@ -715,7 +715,7 @@ function ReportModal({
           <button
             aria-label="Close"
             onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-black/5 hover:text-ink"
+            className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-ink/5 hover:text-ink"
           >
             <X className="h-4 w-4" strokeWidth={2} />
           </button>
@@ -761,7 +761,7 @@ function ModalAction({ icon: Icon, label, onClick }: { icon: LucideIcon; label: 
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 rounded-2xl border border-line bg-card py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+      className="flex flex-col items-center gap-1 rounded-2xl border border-line bg-card py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-ink/[0.04]"
     >
       <Icon className="h-4 w-4 text-wine" strokeWidth={2} />
       {label}
@@ -794,7 +794,7 @@ function Metric({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
       <span className={cn("grid h-9 w-9 place-items-center rounded-xl", accent ? "bg-cta/15 text-cta" : "bg-wine/10 text-wine")}>
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
@@ -807,7 +807,7 @@ function Metric({
 
 function MiniStat({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl bg-card px-2 py-3 text-center shadow-sm ring-1 ring-black/5">
+    <div className="flex flex-col items-center rounded-2xl bg-card px-2 py-3 text-center shadow-sm ring-1 ring-line">
       <Icon className="h-4 w-4 text-wine" strokeWidth={1.75} />
       <span className="mt-1 font-display text-base font-semibold text-ink">{value}</span>
       <span className="text-[10px] leading-tight text-muted">{label}</span>
@@ -841,7 +841,7 @@ function Collapsible({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-2 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-black/5 transition-colors hover:bg-black/[0.01]"
+        className="flex w-full items-center gap-2 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-line transition-colors hover:bg-ink/[0.03]"
       >
         <Icon className="h-5 w-5 shrink-0 text-wine" strokeWidth={2} />
         <div className="min-w-0 flex-1">
@@ -892,9 +892,9 @@ function ManageRow({
   onDelete?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-sm ring-1 ring-black/5">
+    <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-sm ring-1 ring-line">
       {thumb !== undefined && (
-        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-sand ring-1 ring-black/5">
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-sand ring-1 ring-line">
           {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" />}
         </div>
       )}
@@ -998,7 +998,7 @@ function EventsManager() {
       title={`Events (${events.length})`}
       subtitle="Add events to the Events page, or remove ones you don't want."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Sunset Wine Tasting" />
         </Field>
@@ -1034,7 +1034,7 @@ function EventsManager() {
         </div>
         <div className="flex gap-2">
           {editingId && (
-            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-line transition-colors hover:bg-ink/5">
               Cancel
             </button>
           )}
@@ -1126,7 +1126,7 @@ function KnowledgeManager() {
 
   return (
     <Collapsible icon={BookOpen} title={`Local knowledge (${posts.length})`} subtitle="Write local guides & insider tips for premium members.">
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Where locals actually eat" />
         </Field>
@@ -1164,7 +1164,7 @@ function KnowledgeManager() {
         </Field>
         <div className="flex gap-2">
           {editingId && (
-            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+            <button type="button" onClick={cancelEdit} className="rounded-full px-4 py-3 text-sm font-semibold text-muted ring-1 ring-line transition-colors hover:bg-ink/5">
               Cancel
             </button>
           )}
@@ -1217,11 +1217,11 @@ function VenuesManager() {
           const catName = categories.find((c) => c.slug === v.categorySlug)?.name ?? v.categorySlug;
           if (editingId === v.id) {
             return (
-              <div key={v.id} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+              <div key={v.id} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
                 <div className="text-sm font-semibold text-ink">{v.name}</div>
                 <ImageField value={image} onChange={setImage} folder="venues" />
                 <div className="flex gap-2">
-                  <button onClick={() => setEditingId(null)} className="rounded-full px-4 py-2 text-sm font-semibold text-muted ring-1 ring-black/10 transition-colors hover:bg-black/5">
+                  <button onClick={() => setEditingId(null)} className="rounded-full px-4 py-2 text-sm font-semibold text-muted ring-1 ring-line transition-colors hover:bg-ink/5">
                     Cancel
                   </button>
                   <button onClick={() => save(v.id)} disabled={saving} className="flex-1 rounded-full bg-wine py-2 text-sm font-semibold text-white transition-colors hover:bg-wine-soft disabled:opacity-60">
@@ -1291,7 +1291,7 @@ function DealsManager() {
       title={`Deals (${deals.length})`}
       subtitle="Add deals to the Deals page, or remove ones you don't want."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="20% off wine tasting flights" />
         </Field>
@@ -1382,7 +1382,7 @@ function GroupsManager() {
       title={`Community groups (${groups.length})`}
       subtitle="Public WhatsApp group invite links shown on the Community page."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
         <Field label="Group name">
           <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Franschhoek Foodies" />
         </Field>

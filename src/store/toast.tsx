@@ -28,7 +28,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className="animate-popin pointer-events-auto max-w-[20rem] rounded-full bg-ink/90 px-4 py-2 text-center text-sm font-medium text-white shadow-lg backdrop-blur"
+            className="animate-popin pointer-events-auto max-w-[20rem] rounded-full bg-ink/90 px-4 py-2 text-center text-sm font-medium text-sand shadow-lg backdrop-blur"
           >
             {t.message}
           </div>

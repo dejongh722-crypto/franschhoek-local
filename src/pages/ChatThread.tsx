@@ -31,7 +31,6 @@ import {
 
 const GENERAL_IMAGE =
   "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?auto=format&fit=crop&w=200&q=70";
-import { useMembership } from "@/store/membership";
 import { useUserEvents } from "@/store/userEvents";
 import { useChat } from "@/store/chat";
 import { useAuth } from "@/store/auth";
@@ -44,7 +43,6 @@ export function ChatThread() {
   const isGeneral = eventId === GENERAL_ID;
   const { getEventById } = useEvents();
   const event = isGeneral ? undefined : getEventById(eventId);
-  const { isPremium } = useMembership();
   const { isAttending, toggleAttending } = useUserEvents();
   const { getMessages, send, toggleReaction, pushAttendeeReply, openRoom } = useChat();
   const { user } = useAuth();
@@ -64,8 +62,8 @@ export function ChatThread() {
   const hostName = isGeneral ? GENERAL_HOST : event?.venue;
   const hasChat = isGeneral || !!event?.hasChat;
   const attending = event ? isAttending(event.id) : false;
-  // General Community is free; event chats require Premium + RSVP.
-  const canChat = hasChat && (isGeneral || (isPremium && attending));
+  // General Community is open to all; event chats just require an RSVP.
+  const canChat = hasChat && (isGeneral || attending);
   const messages = canChat && threadId ? getMessages(threadId, hostName) : [];
   const byId = new Map(messages.map((m) => [m.id, m]));
   const pinned = messages.find((m) => m.pinned);
@@ -143,8 +141,8 @@ export function ChatThread() {
               <p className="text-[11px] text-white/70">Open to all members</p>
             ) : (
               <p className="flex items-center gap-1.5 text-[11px] text-white/70">
-                <Crown className="h-3 w-3 text-cta" strokeWidth={2.5} />
-                Premium chat
+                <MessagesSquare className="h-3 w-3 text-white/70" strokeWidth={2.5} />
+                Event chat
               </p>
             )}
           </div>
@@ -178,16 +176,7 @@ export function ChatThread() {
         )}
       </header>
 
-      {!isGeneral && !isPremium ? (
-        <Blocked
-          icon={Lock}
-          title="Premium members only"
-          subtitle="Upgrade to Premium to join event community chats."
-          actionLabel="Go Premium"
-          accent
-          onAction={() => navigate("/membership")}
-        />
-      ) : !hasChat ? (
+      {!hasChat ? (
         <Blocked
           icon={MessagesSquare}
           title="No community chat"
@@ -221,7 +210,7 @@ export function ChatThread() {
 
           {/* Messages */}
           <div className="relative flex-1 space-y-1 overflow-y-auto px-4 py-4">
-            <p className="mx-auto mb-2 w-fit rounded-full bg-black/5 px-3 py-1 text-[11px] text-muted">Today</p>
+            <p className="mx-auto mb-2 w-fit rounded-full bg-ink/5 px-3 py-1 text-[11px] text-muted">Today</p>
 
             {visible.map((m, i) => {
               const mine = m.authorId === myId;
@@ -259,7 +248,7 @@ export function ChatThread() {
                     {active && (
                       <div
                         className={cn(
-                          "absolute -top-11 z-20 flex animate-popin items-center gap-0.5 rounded-full bg-card p-1 shadow-lg ring-1 ring-black/10",
+                          "absolute -top-11 z-20 flex animate-popin items-center gap-0.5 rounded-full bg-card p-1 shadow-lg ring-1 ring-line",
                           mine ? "right-0" : "left-0",
                         )}
                       >
@@ -278,7 +267,7 @@ export function ChatThread() {
                         <span className="mx-0.5 h-5 w-px bg-line" />
                         <button
                           onClick={() => startReply(m)}
-                          className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-black/5"
+                          className="grid h-8 w-8 place-items-center rounded-full text-muted transition-colors hover:bg-ink/5"
                           aria-label="Reply"
                         >
                           <Reply className="h-4 w-4" strokeWidth={2} />
@@ -294,7 +283,7 @@ export function ChatThread() {
                           ? "rounded-br-md bg-wine text-white"
                           : isHost
                             ? "rounded-bl-md bg-cta/10 text-ink ring-1 ring-cta/30"
-                            : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-black/5",
+                            : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-line",
                       )}
                     >
                       {/* Quoted reply */}
@@ -302,7 +291,7 @@ export function ChatThread() {
                         <span
                           className={cn(
                             "mb-1 block rounded-lg border-l-2 px-2 py-1 text-left text-xs",
-                            mine ? "border-white/50 bg-white/15 text-white/90" : "border-wine/40 bg-black/5 text-muted",
+                            mine ? "border-white/50 bg-white/15 text-white/90" : "border-wine/40 bg-ink/5 text-muted",
                           )}
                         >
                           <span className="font-semibold">{replied.authorName}</span>
@@ -329,7 +318,7 @@ export function ChatThread() {
                               onClick={() => toggleReaction(m.id, emoji, m.reactions)}
                               className={cn(
                                 "flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[11px] font-medium ring-1 transition-colors",
-                                reacted ? "bg-wine/10 text-wine ring-wine/30" : "bg-card text-muted ring-black/5",
+                                reacted ? "bg-wine/10 text-wine ring-wine/30" : "bg-card text-muted ring-line",
                               )}
                             >
                               <span>{emoji}</span>
@@ -353,7 +342,7 @@ export function ChatThread() {
                 >
                   {initials(ATTENDEES[0].name)}
                 </span>
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-black/5">
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-line">
                   {[0, 0.2, 0.4].map((d) => (
                     <span
                       key={d}
@@ -409,7 +398,7 @@ export function ChatThread() {
                 type="button"
                 aria-label="Add emoji"
                 onClick={() => setDraft((d) => d + "🙂")}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-black/5"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-muted transition-colors hover:bg-ink/5"
               >
                 <Smile className="h-5 w-5" strokeWidth={1.75} />
               </button>

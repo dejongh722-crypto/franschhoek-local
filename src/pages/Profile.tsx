@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   LogIn,
   Shield,
+  Moon,
 } from "lucide-react";
 import { ADMIN_ENABLED } from "@/config";
 import { useAuth } from "@/store/auth";
@@ -27,6 +28,7 @@ import { type AppEvent } from "@/data/events";
 import { initials } from "@/data/chat";
 import { useEvents } from "@/store/events";
 import { useMembership } from "@/store/membership";
+import { useTheme } from "@/store/theme";
 import { useUserEvents } from "@/store/userEvents";
 import { useProfile } from "@/store/profile";
 import { useToast } from "@/store/toast";
@@ -42,6 +44,7 @@ export function Profile() {
   const { getEventById } = useEvents();
   const { savedIds, attendingIds } = useUserEvents();
   const { name, notifications, avatar, setName, toggleNotifications, setAvatar } = useProfile();
+  const { isDark, toggle: toggleTheme } = useTheme();
   const { user, signOut: authSignOut, updateProfile, isAdmin } = useAuth();
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -193,7 +196,7 @@ export function Profile() {
 
       <div className="px-5">
         {/* Stats */}
-        <div className="relative z-10 -mt-6 grid grid-cols-3 divide-x divide-line rounded-2xl bg-card py-4 shadow-sm ring-1 ring-black/5">
+        <div className="relative z-10 -mt-6 grid grid-cols-3 divide-x divide-line rounded-2xl bg-card py-4 shadow-sm ring-1 ring-line">
           <Stat icon={Heart} value={savedEvents.length} label="Saved" />
           <Stat icon={CalendarCheck} value={attendingEvents.length} label="Attending" />
           <Stat icon={MessagesSquare} value={chatsCount} label="Chats" />
@@ -202,7 +205,7 @@ export function Profile() {
         {/* Membership */}
         <section className="mt-6">
           {isPremium ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-line">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-cat-adventure/10 text-cat-adventure">
                 <ShieldCheck className="h-6 w-6" strokeWidth={1.75} />
               </span>
@@ -266,7 +269,13 @@ export function Profile() {
         {/* Settings */}
         <section className="mt-7">
           <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Settings</h2>
-          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5">
+          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-line">
+            <SettingRow
+              icon={Moon}
+              label="Dark mode"
+              onClick={toggleTheme}
+              control={<Switch on={isDark} />}
+            />
             <SettingRow
               icon={Bell}
               label="Notifications"
@@ -355,7 +364,7 @@ function ListSection({
       {count > 0 ? (
         <div className="space-y-3">{children}</div>
       ) : (
-        <div className="flex items-center gap-3 rounded-2xl border border-dashed border-line bg-white/50 px-4 py-5 text-sm text-muted">
+        <div className="flex items-center gap-3 rounded-2xl border border-dashed border-line bg-card/50 px-4 py-5 text-sm text-muted">
           <EmptyIcon className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.75} />
           {emptyText}
         </div>
@@ -383,7 +392,7 @@ function SettingRow({
     <button
       onClick={onClick}
       className={
-        "flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-black/[0.02] " +
+        "flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-ink/[0.04] " +
         (last ? "" : "border-b border-line")
       }
     >

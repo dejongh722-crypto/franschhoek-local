@@ -67,10 +67,12 @@ export function Home() {
           )}
         </section>
 
-        {/* Premium upsell */}
-        <section className="px-5">
-          <PremiumBanner />
-        </section>
+        {/* Premium upsell — only for free members; hidden once Premium. */}
+        {!isPremium && (
+          <section className="px-5">
+            <PremiumBanner />
+          </section>
+        )}
 
         {/* Local knowledge */}
         <section>
@@ -108,7 +110,7 @@ export function Home() {
                 ))}
               </div>
               <div className="absolute inset-0 grid place-items-center px-5">
-                <div className="w-full max-w-xs rounded-2xl bg-white/95 p-5 text-center shadow-lg ring-1 ring-black/5 backdrop-blur">
+                <div className="w-full max-w-xs rounded-2xl bg-card/95 p-5 text-center shadow-lg ring-1 ring-line backdrop-blur">
                   <span className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-wine/10 text-wine">
                     <Lock className="h-5 w-5" strokeWidth={1.75} />
                   </span>

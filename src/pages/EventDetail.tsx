@@ -15,8 +15,10 @@ import { categoryBySlug, categoryImage } from "@/data/categories";
 import { formatEventDateLong, formatEventTime } from "@/data/events";
 import { useEvents } from "@/store/events";
 import { useUserEvents } from "@/store/userEvents";
+import { useVenues } from "@/store/venues";
 import { useMembership } from "@/store/membership";
 import { useToast } from "@/store/toast";
+import { StarRating } from "@/components/StarRating";
 import { share } from "@/lib/share";
 import { localNotify } from "@/lib/notify";
 import { cn } from "@/lib/utils";
@@ -27,6 +29,7 @@ export function EventDetail() {
   const { getEventById } = useEvents();
   const event = getEventById(id);
   const { isSaved, toggleSaved, isAttending, toggleAttending } = useUserEvents();
+  const { getVenueByName } = useVenues();
   const { isPremium } = useMembership();
   const toast = useToast();
 
@@ -47,10 +50,11 @@ export function EventDetail() {
 
   const cat = categoryBySlug[event.categorySlug];
   const Icon = cat?.icon;
+  const venue = getVenueByName(event.venue);
   const saved = isSaved(event.id);
   const attending = isAttending(event.id);
   const locked = !isPremium;
-  const chatAvailable = event.hasChat && isPremium && attending;
+  const chatAvailable = event.hasChat && attending;
 
   return (
     <div className="pb-8">
@@ -118,6 +122,12 @@ export function EventDetail() {
         )}
         <h1 className="mt-1.5 font-display text-3xl font-semibold leading-tight text-ink">{event.title}</h1>
 
+        {venue?.rating && (
+          <div className="mt-2">
+            <StarRating rating={venue.rating} count={venue.ratingCount} size="md" />
+          </div>
+        )}
+
         {/* Info rows */}
         <div className="mt-5 space-y-3">
           <InfoRow icon={CalendarDays} label={formatEventDateLong(event.date)} />
@@ -141,7 +151,7 @@ export function EventDetail() {
                 <p className="text-xs text-muted">
                   {chatAvailable
                     ? "Chat with others attending this event."
-                    : "Premium members who've RSVP'd can join the conversation."}
+                    : "RSVP to this event to join the conversation."}
                 </p>
               </div>
               {chatAvailable ? (
@@ -227,7 +237,7 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-black/5">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-line">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
       <div className="min-w-0">

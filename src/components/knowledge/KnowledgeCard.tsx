@@ -11,7 +11,7 @@ export function KnowledgeCard({ post }: { post: KnowledgePost }) {
   return (
     <article
       onClick={() => navigate(`/knowledge/${post.id}`)}
-      className="group flex cursor-pointer gap-3 overflow-hidden rounded-2xl bg-card p-2.5 shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="group flex cursor-pointer gap-3 overflow-hidden rounded-2xl bg-card p-2.5 shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
       <img
         src={post.image}

@@ -35,7 +35,7 @@ export function PromoCarousel() {
         <button
           key={promo.id}
           onClick={() => open(promo.id, promo.ctaLink)}
-          className="group relative h-44 w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl text-left shadow-md ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+          className="group relative h-44 w-[280px] shrink-0 snap-start overflow-hidden rounded-3xl text-left shadow-md ring-1 ring-line transition-transform active:scale-[0.99]"
         >
           {promo.image ? (
             <img src={promo.image} alt="" className="absolute inset-0 h-full w-full object-cover" />

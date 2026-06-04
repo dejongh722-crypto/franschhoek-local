@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { Lock, Crown, ChevronRight, Users, CalendarPlus, MessageCircle, Bot, MessagesSquare } from "lucide-react";
+import { ChevronRight, Users, CalendarPlus, MessageCircle, Bot, MessagesSquare } from "lucide-react";
 import { formatChatTime, GENERAL_ID, ONLINE_COUNT } from "@/data/chat";
 import { categoryBySlug } from "@/data/categories";
 import { useEvents } from "@/store/events";
-import { useMembership } from "@/store/membership";
 import { useUserEvents } from "@/store/userEvents";
 import { useChat } from "@/store/chat";
 import { useCommunityGroups, type CommunityGroup } from "@/store/communityGroups";
@@ -11,7 +10,6 @@ import { useCommunityGroups, type CommunityGroup } from "@/store/communityGroups
 export function Community() {
   const navigate = useNavigate();
   const { events } = useEvents();
-  const { isPremium } = useMembership();
   const { attendingIds } = useUserEvents();
   const { getLastMessage } = useChat();
   const { activeGroups } = useCommunityGroups();
@@ -66,7 +64,7 @@ export function Community() {
             {/* Ask a question — help assistant */}
             <button
               onClick={() => navigate("/community/ask")}
-              className="flex w-full items-center gap-3 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+              className="flex w-full items-center gap-3 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
             >
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-wine/10 text-wine">
                 <Bot className="h-6 w-6" strokeWidth={1.75} />
@@ -88,12 +86,10 @@ export function Community() {
             </button>
           </section>
 
-          {/* Event chats — premium */}
+          {/* Event chats — free, for events you're attending */}
           <section>
             <h2 className="mb-3 text-xs font-bold uppercase tracking-wide text-muted">Your event chats</h2>
-            {!isPremium ? (
-              <Gate onUpgrade={() => navigate("/membership")} />
-            ) : myChats.length > 0 ? (
+            {myChats.length > 0 ? (
               <div className="space-y-3">
                 {myChats.map((event) => {
                   const last = getLastMessage(event.id, event.venue);
@@ -101,7 +97,7 @@ export function Community() {
                     <button
                       key={event.id}
                       onClick={() => navigate(`/community/${event.id}`)}
-                      className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+                      className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
                     >
                       <img src={event.image} alt={event.title} className="h-14 w-14 shrink-0 rounded-xl object-cover" />
                       <div className="min-w-0 flex-1">
@@ -134,7 +130,7 @@ function GroupCard({ group }: { group: CommunityGroup }) {
       href={group.inviteUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
       <span
         className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white"
@@ -158,33 +154,6 @@ function GroupCard({ group }: { group: CommunityGroup }) {
   );
 }
 
-function Gate({ onUpgrade }: { onUpgrade: () => void }) {
-  return (
-    <div className="py-1">
-      <div className="mx-auto max-w-sm rounded-3xl bg-card p-6 text-center shadow-sm ring-1 ring-black/5">
-        <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-wine/10 text-wine">
-          <Lock className="h-6 w-6" strokeWidth={1.75} />
-        </span>
-        <div className="mt-4 flex items-center justify-center gap-1.5 text-cta">
-          <Crown className="h-4 w-4" strokeWidth={2} />
-          <span className="text-[11px] font-bold uppercase tracking-[0.18em]">Premium</span>
-        </div>
-        <h2 className="mt-1 font-display text-2xl font-semibold text-ink">Event chats are Premium</h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          The general room and the assistant are free for everyone. Go Premium to join the community
-          chat for events you're attending.
-        </p>
-        <button
-          onClick={onUpgrade}
-          className="mt-5 w-full rounded-full bg-cta py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-cta-hover"
-        >
-          Go Premium
-        </button>
-      </div>
-    </div>
-  );
-}
-
 /** Simple, friendly explanation of how event chats appear. */
 function Steps({ onBrowse }: { onBrowse: () => void }) {
   const steps = [
@@ -193,7 +162,7 @@ function Steps({ onBrowse }: { onBrowse: () => void }) {
     { n: "3", text: "Its chat appears here", hint: "Open it and start chatting." },
   ];
   return (
-    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-line">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-5 w-5 text-wine" strokeWidth={1.75} />
         <h3 className="font-semibold text-ink">How event chats work</h3>

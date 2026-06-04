@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { MapPin, ChevronRight } from "lucide-react";
 import { categoryBySlug, categoryImage } from "@/data/categories";
 import { venueImage, type Venue } from "@/data/venues";
+import { StarRating } from "@/components/StarRating";
 
 export function VenueCard({ venue }: { venue: Venue }) {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export function VenueCard({ venue }: { venue: Venue }) {
   return (
     <button
       onClick={() => navigate(`/venues/${venue.id}`)}
-      className="group flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-card p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="group flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-card p-2.5 text-left shadow-sm ring-1 ring-line transition-transform active:scale-[0.99]"
     >
       <img
         src={venueImage(venue)}
@@ -28,8 +29,10 @@ export function VenueCard({ venue }: { venue: Venue }) {
           </span>
         )}
         <h3 className="line-clamp-1 font-display text-base font-semibold leading-snug text-ink">{venue.name}</h3>
-        {venue.description && (
-          <p className="line-clamp-1 text-xs text-muted">{venue.description}</p>
+        {venue.rating ? (
+          <StarRating rating={venue.rating} count={venue.ratingCount} className="mt-0.5" />
+        ) : (
+          venue.description && <p className="line-clamp-1 text-xs text-muted">{venue.description}</p>
         )}
         {venue.address && (
           <span className="mt-0.5 flex items-center gap-1 truncate text-[11px] text-muted">
