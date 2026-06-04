@@ -8,11 +8,13 @@ export interface Deal {
   /** Short badge text, e.g. "20% OFF", "2-for-1". */
   discount: string;
   description: string;
-  /** Redemption code shown to premium members. */
+  /** Redemption code, when the offer has one. Empty for "book direct" offers. */
   code: string;
-  /** ISO date the deal is valid until. */
+  /** ISO date the deal is valid until. Empty when not known. */
   validUntil: string;
   image: string;
+  /** The venue's own offer page (scraped deals), used for "View offer". */
+  sourceUrl?: string;
 }
 
 const img = (id: string, w = 800) =>
@@ -97,18 +99,24 @@ export function getDealById(id: string | undefined): Deal | undefined {
 const validFmt = new Intl.DateTimeFormat("en-ZA", { day: "numeric", month: "short", year: "numeric" });
 
 export function formatValidUntil(iso: string) {
-  return validFmt.format(new Date(iso));
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? "" : validFmt.format(d);
 }
 
-/** Whole days from today until the given date (0 = today, negative = past). */
+/** Whole days from today until the given date (0 = today, negative = past).
+ *  Returns Infinity for an unknown/empty date so it never reads as "urgent". */
 export function daysUntil(iso: string): number {
+  const target = new Date(iso);
+  if (Number.isNaN(target.getTime())) return Infinity;
   const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-  return Math.round((startOfDay(new Date(iso)) - startOfDay(new Date())) / 86_400_000);
+  return Math.round((startOfDay(target) - startOfDay(new Date())) / 86_400_000);
 }
 
-/** Short urgency label, e.g. "Ends today", "1 day left", "12 days left". */
+/** Short urgency label, e.g. "Ends today", "1 day left", "12 days left".
+ *  Empty string when there's no known end date. */
 export function daysLeftLabel(iso: string): string {
   const d = daysUntil(iso);
+  if (!Number.isFinite(d)) return "";
   if (d <= 0) return "Ends today";
   if (d === 1) return "1 day left";
   return `${d} days left`;

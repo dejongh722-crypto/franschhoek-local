@@ -32,6 +32,7 @@ interface DealRow {
   code: string | null;
   valid_until: string | null;
   image: string | null;
+  source_url: string | null;
 }
 
 function fromRow(r: DealRow): Deal {
@@ -45,6 +46,7 @@ function fromRow(r: DealRow): Deal {
     code: r.code ?? "",
     validUntil: r.valid_until ?? "",
     image: r.image ?? "",
+    sourceUrl: r.source_url ?? undefined,
   };
 }
 

@@ -11,6 +11,7 @@ import {
   Navigation,
   Lock,
   Crown,
+  ExternalLink,
 } from "lucide-react";
 import { categoryBySlug } from "@/data/categories";
 import { formatValidUntil } from "@/data/deals";
@@ -47,6 +48,8 @@ export function DealDetail() {
 
   const cat = categoryBySlug[deal.categorySlug];
   const Icon = cat?.icon;
+  const hasCode = Boolean(deal.code);
+  const validLabel = formatValidUntil(deal.validUntil);
 
   const copyCode = async () => {
     try {
@@ -64,8 +67,10 @@ export function DealDetail() {
   };
 
   const terms = [
-    `Valid until ${formatValidUntil(deal.validUntil)}.`,
-    "Present the code at the venue to redeem. One redemption per member.",
+    ...(validLabel ? [`Valid until ${validLabel}.`] : []),
+    hasCode
+      ? "Present the code at the venue to redeem. One redemption per member."
+      : "Book direct with the venue and mention this offer to redeem.",
     "Cannot be combined with other offers or promotions.",
     "Subject to availability; the venue reserves the right to amend terms.",
   ];
@@ -115,47 +120,70 @@ export function DealDetail() {
 
         <div className="mt-4 space-y-3">
           <InfoRow icon={MapPin} label={deal.venue} sub="Franschhoek, Western Cape" />
-          <InfoRow icon={CalendarClock} label={`Valid until ${formatValidUntil(deal.validUntil)}`} />
+          {validLabel && <InfoRow icon={CalendarClock} label={`Valid until ${validLabel}`} />}
         </div>
 
         <h2 className="mt-7 font-display text-lg font-semibold text-ink">About this deal</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">{deal.description}</p>
 
         {/* Redeem */}
-        <h2 className="mt-7 font-display text-lg font-semibold text-ink">Your code</h2>
+        <h2 className="mt-7 font-display text-lg font-semibold text-ink">
+          {hasCode ? "Your code" : "How to redeem"}
+        </h2>
         {isPremium ? (
           <div className="mt-2">
-            {!revealed ? (
-              <button
-                onClick={() => setRevealed(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-wine py-3.5 text-sm font-semibold text-white transition-colors hover:bg-wine-soft"
-              >
-                <Ticket className="h-4 w-4" strokeWidth={2} />
-                Reveal code
-              </button>
-            ) : (
-              <button
-                onClick={copyCode}
-                className="flex w-full items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-wine/40 bg-wine/5 px-4 py-3 transition-colors hover:bg-wine/10"
-              >
-                <span className="font-mono text-lg font-bold tracking-widest text-wine">{deal.code}</span>
-                <span
-                  className={cn(
-                    "flex items-center gap-1 text-xs font-semibold",
-                    copied ? "text-cat-adventure" : "text-wine",
-                  )}
+            {hasCode ? (
+              !revealed ? (
+                <button
+                  onClick={() => setRevealed(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-wine py-3.5 text-sm font-semibold text-white transition-colors hover:bg-wine-soft"
                 >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4" strokeWidth={2.5} /> Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" strokeWidth={2} /> Copy
-                    </>
-                  )}
-                </span>
-              </button>
+                  <Ticket className="h-4 w-4" strokeWidth={2} />
+                  Reveal code
+                </button>
+              ) : (
+                <button
+                  onClick={copyCode}
+                  className="flex w-full items-center justify-between gap-2 rounded-2xl border-2 border-dashed border-wine/40 bg-wine/5 px-4 py-3 transition-colors hover:bg-wine/10"
+                >
+                  <span className="font-mono text-lg font-bold tracking-widest text-wine">{deal.code}</span>
+                  <span
+                    className={cn(
+                      "flex items-center gap-1 text-xs font-semibold",
+                      copied ? "text-cat-adventure" : "text-wine",
+                    )}
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="h-4 w-4" strokeWidth={2.5} /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-4 w-4" strokeWidth={2} /> Copy
+                      </>
+                    )}
+                  </span>
+                </button>
+              )
+            ) : (
+              /* No redemption code — a "book direct" offer. Send them to the venue's
+                 own offer page rather than showing a fake code. */
+              <>
+                <p className="text-sm text-muted">
+                  No code needed — book direct with the venue and mention this offer.
+                </p>
+                {deal.sourceUrl && (
+                  <a
+                    href={deal.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-wine py-3.5 text-sm font-semibold text-white transition-colors hover:bg-wine-soft"
+                  >
+                    <ExternalLink className="h-4 w-4" strokeWidth={2} />
+                    View offer
+                  </a>
+                )}
+              </>
             )}
           </div>
         ) : (
@@ -166,7 +194,7 @@ export function DealDetail() {
             </div>
             <p className="mt-1.5 flex items-center gap-2 text-sm text-white/85">
               <Lock className="h-4 w-4 shrink-0" strokeWidth={2} />
-              Upgrade to Premium to reveal this code and redeem the deal.
+              Upgrade to Premium to unlock this deal.
             </p>
             <button
               onClick={() => navigate("/membership")}

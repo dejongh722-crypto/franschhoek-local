@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 export function DealTicket({ deal }: { deal: Deal }) {
   const navigate = useNavigate();
   const cat = categoryBySlug[deal.categorySlug];
+  const endsLabel = daysLeftLabel(deal.validUntil);
   const urgent = daysUntil(deal.validUntil) <= 3;
 
   return (
@@ -28,15 +29,17 @@ export function DealTicket({ deal }: { deal: Deal }) {
           <MapPin className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
           <span className="truncate">{deal.venue}</span>
         </span>
-        <span
-          className={cn(
-            "mt-1 flex items-center gap-1 text-[11px] font-medium",
-            urgent ? "text-red-500" : "text-muted",
-          )}
-        >
-          <CalendarClock className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
-          {daysLeftLabel(deal.validUntil)}
-        </span>
+        {endsLabel && (
+          <span
+            className={cn(
+              "mt-1 flex items-center gap-1 text-[11px] font-medium",
+              urgent ? "text-red-500" : "text-muted",
+            )}
+          >
+            <CalendarClock className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
+            {endsLabel}
+          </span>
+        )}
       </div>
 
       {/* Tear-off discount stub */}

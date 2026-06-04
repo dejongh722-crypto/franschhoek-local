@@ -330,7 +330,9 @@ ${text}`;
   }
 }
 
-/** Normalize an AI-extracted deal into a `deals` table row. */
+/** Normalize an AI-extracted deal into a `deals` table row.
+ *  Codes and end-dates are left null unless genuinely present on the page —
+ *  these are "book direct" offers, so we never invent a redemption code. */
 function dealRow(d, sourceUrl, category, now) {
   return {
     id: stableId("del", sourceUrl, d.title),
@@ -339,8 +341,8 @@ function dealRow(d, sourceUrl, category, now) {
     category_slug: d.categorySlug || category,
     discount: d.discount || "OFFER",
     description: d.description || "",
-    code: d.code || "DEAL",
-    valid_until: d.validUntil || new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
+    code: d.code ? String(d.code).trim() : null,
+    valid_until: d.validUntil || null,
     image: d.image || "",
     source: "scraper",
     source_url: sourceUrl,
