@@ -15,8 +15,12 @@ function tierIsPremium(tier: MembershipTier) {
 
 export const isPremiumMember = tierIsPremium(CURRENT_TIER);
 
-/** Whether to expose the admin dashboard entry (owner-only). */
-export const ADMIN_ENABLED = true;
+/**
+ * Whether to expose the admin dashboard to anyone (no auth). This is a DEV-only
+ * convenience — in production builds the admin area is restricted to real admins
+ * (profiles.is_admin) via AdminRoute + the Profile entry, so it's never public.
+ */
+export const ADMIN_ENABLED = import.meta.env.DEV;
 
 /**
  * Public URL of the hosted web app. Used by the native (iOS/Android) shells to send

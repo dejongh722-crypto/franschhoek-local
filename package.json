@@ -13,10 +13,12 @@
     "preview": "vite preview",
     "cap:sync": "npm run build && cap sync",
     "cap:android": "npm run build && cap sync android && cap open android",
-    "cap:ios": "npm run build && cap sync ios && cap open ios"
+    "cap:ios": "npm run build && cap sync ios && cap open ios",
+    "assets": "capacitor-assets generate --iconBackgroundColor '#7c2d3a' --iconBackgroundColorDark '#5c1f2a' --splashBackgroundColor '#faf7f2' --splashBackgroundColorDark '#17120f'"
   },
   "devDependencies": {
     "@capacitor/android": "^8.4.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.4.0",
     "@capacitor/core": "^8.4.0",
     "@capacitor/ios": "^8.4.0",
