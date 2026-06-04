@@ -18,7 +18,7 @@ export function EventListCard({ event }: { event: AppEvent }) {
   return (
     <div
       onClick={() => navigate(`/events/${event.id}`)}
-      className="cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="cursor-pointer overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
     >
       <div className="relative h-40">
         <img

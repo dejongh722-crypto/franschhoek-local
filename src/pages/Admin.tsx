@@ -289,7 +289,7 @@ export function Admin() {
         {/* Revenue chart */}
         <section>
           <h2 className="mb-3 font-display text-lg font-semibold text-ink">Revenue · last 8 months</h2>
-          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
             <div className="flex h-40 items-end justify-between gap-2">
               {monthlyRevenue.map((m) => (
                 <div key={m.label} className="flex flex-1 flex-col items-center gap-1.5">
@@ -330,7 +330,7 @@ export function Admin() {
               </button>
             )}
           </div>
-          <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+          <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
             <Field label="Title">
               <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Winter Wine Special 🍷" className="input" />
             </Field>
@@ -448,7 +448,7 @@ export function Admin() {
             {promotions.map((p) => {
               const status = promoStatus(p);
               return (
-                <div key={p.id} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                <div key={p.id} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="truncate font-semibold text-ink">{p.title}</h3>
@@ -537,7 +537,7 @@ export function Admin() {
             {promotions.map((p) => {
               const m = metrics[p.id] ?? NO_METRICS;
               return (
-                <div key={p.id} className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+                <div key={p.id} className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="min-w-0 flex-1 truncate font-semibold text-ink">{p.title}</h3>
                     <button
@@ -565,7 +565,7 @@ export function Admin() {
           title="Content scraper"
           subtitle="Auto-updates venues, events & deals every 4 hours"
         >
-          <div className="rounded-2xl bg-white p-4 text-sm shadow-sm ring-1 ring-black/5">
+          <div className="rounded-2xl bg-card p-4 text-sm shadow-sm ring-1 ring-black/5">
             {scrapeRun ? (
               <>
                 <div className="flex items-center justify-between">
@@ -620,7 +620,7 @@ export function Admin() {
           <p className="mb-3 text-[11px] text-muted">
             {usersAreReal ? `${usersList.length} member${usersList.length === 1 ? "" : "s"} (live)` : "Showing recent members (sample data)"}
           </p>
-          <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5">
             {usersList.map((u, i) => (
               <div
                 key={u.email || i}
@@ -707,7 +707,7 @@ function ReportModal({
   return (
     <div className="fixed inset-0 z-[90] grid place-items-center bg-black/40 p-4 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="animate-rise w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl"
+        className="animate-rise w-full max-w-sm overflow-hidden rounded-3xl bg-card shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
@@ -761,7 +761,7 @@ function ModalAction({ icon: Icon, label, onClick }: { icon: LucideIcon; label: 
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-1 rounded-2xl border border-line bg-white py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+      className="flex flex-col items-center gap-1 rounded-2xl border border-line bg-card py-2.5 text-xs font-semibold text-ink transition-colors hover:bg-black/[0.02]"
     >
       <Icon className="h-4 w-4 text-wine" strokeWidth={2} />
       {label}
@@ -794,7 +794,7 @@ function Metric({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
       <span className={cn("grid h-9 w-9 place-items-center rounded-xl", accent ? "bg-cta/15 text-cta" : "bg-wine/10 text-wine")}>
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
@@ -807,7 +807,7 @@ function Metric({
 
 function MiniStat({ icon: Icon, label, value }: { icon: LucideIcon; label: string; value: string }) {
   return (
-    <div className="flex flex-col items-center rounded-2xl bg-white px-2 py-3 text-center shadow-sm ring-1 ring-black/5">
+    <div className="flex flex-col items-center rounded-2xl bg-card px-2 py-3 text-center shadow-sm ring-1 ring-black/5">
       <Icon className="h-4 w-4 text-wine" strokeWidth={1.75} />
       <span className="mt-1 font-display text-base font-semibold text-ink">{value}</span>
       <span className="text-[10px] leading-tight text-muted">{label}</span>
@@ -841,7 +841,7 @@ function Collapsible({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center gap-2 rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-black/5 transition-colors hover:bg-black/[0.01]"
+        className="flex w-full items-center gap-2 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-black/5 transition-colors hover:bg-black/[0.01]"
       >
         <Icon className="h-5 w-5 shrink-0 text-wine" strokeWidth={2} />
         <div className="min-w-0 flex-1">
@@ -868,7 +868,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
       >
         <span
           className={cn(
-            "absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform",
+            "absolute top-0.5 h-4 w-4 rounded-full bg-card shadow transition-transform",
             checked ? "translate-x-4" : "translate-x-0.5",
           )}
         />
@@ -892,7 +892,7 @@ function ManageRow({
   onDelete?: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-black/5">
+    <div className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-sm ring-1 ring-black/5">
       {thumb !== undefined && (
         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-sand ring-1 ring-black/5">
           {thumb && <img src={thumb} alt="" className="h-full w-full object-cover" />}
@@ -998,7 +998,7 @@ function EventsManager() {
       title={`Events (${events.length})`}
       subtitle="Add events to the Events page, or remove ones you don't want."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Sunset Wine Tasting" />
         </Field>
@@ -1126,7 +1126,7 @@ function KnowledgeManager() {
 
   return (
     <Collapsible icon={BookOpen} title={`Local knowledge (${posts.length})`} subtitle="Write local guides & insider tips for premium members.">
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Where locals actually eat" />
         </Field>
@@ -1217,7 +1217,7 @@ function VenuesManager() {
           const catName = categories.find((c) => c.slug === v.categorySlug)?.name ?? v.categorySlug;
           if (editingId === v.id) {
             return (
-              <div key={v.id} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+              <div key={v.id} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
                 <div className="text-sm font-semibold text-ink">{v.name}</div>
                 <ImageField value={image} onChange={setImage} folder="venues" />
                 <div className="flex gap-2">
@@ -1291,7 +1291,7 @@ function DealsManager() {
       title={`Deals (${deals.length})`}
       subtitle="Add deals to the Deals page, or remove ones you don't want."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
         <Field label="Title">
           <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="20% off wine tasting flights" />
         </Field>
@@ -1382,7 +1382,7 @@ function GroupsManager() {
       title={`Community groups (${groups.length})`}
       subtitle="Public WhatsApp group invite links shown on the Community page."
     >
-      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <form onSubmit={submit} className="space-y-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
         <Field label="Group name">
           <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Franschhoek Foodies" />
         </Field>

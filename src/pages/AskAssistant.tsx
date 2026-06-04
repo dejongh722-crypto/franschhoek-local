@@ -114,7 +114,7 @@ export function AskAssistant() {
                     "whitespace-pre-line rounded-2xl px-3.5 py-2 text-sm leading-relaxed",
                     mine
                       ? "rounded-br-md bg-wine text-white"
-                      : "rounded-bl-md bg-white text-ink shadow-sm ring-1 ring-black/5",
+                      : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-black/5",
                   )}
                 >
                   {m.body}
@@ -130,7 +130,7 @@ export function AskAssistant() {
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-wine text-white">
               <Bot className="h-4 w-4" strokeWidth={2} />
             </span>
-            <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-black/5">
               {[0, 0.2, 0.4].map((d) => (
                 <span
                   key={d}
@@ -151,7 +151,7 @@ export function AskAssistant() {
           <button
             key={q}
             onClick={() => ask(q)}
-            className="shrink-0 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-wine/40"
+            className="shrink-0 rounded-full border border-line bg-card px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-wine/40"
           >
             {q}
           </button>
@@ -164,7 +164,7 @@ export function AskAssistant() {
           e.preventDefault();
           ask();
         }}
-        className="flex items-center gap-2 border-t border-line bg-white px-3 py-2.5 pb-[calc(env(safe-area-inset-bottom)+0.6rem)]"
+        className="flex items-center gap-2 border-t border-line bg-card px-3 py-2.5 pb-[calc(env(safe-area-inset-bottom)+0.6rem)]"
       >
         <input
           value={draft}

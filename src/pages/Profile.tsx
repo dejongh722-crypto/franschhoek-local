@@ -137,7 +137,7 @@ export function Profile() {
                 className="h-20 w-20 rounded-full object-cover shadow-md ring-4 ring-white/20"
               />
             ) : (
-              <span className="grid h-20 w-20 place-items-center rounded-full bg-white font-display text-2xl font-semibold text-wine shadow-md ring-4 ring-white/20">
+              <span className="grid h-20 w-20 place-items-center rounded-full bg-card font-display text-2xl font-semibold text-wine shadow-md ring-4 ring-white/20">
                 {initials(name)}
               </span>
             )}
@@ -193,7 +193,7 @@ export function Profile() {
 
       <div className="px-5">
         {/* Stats */}
-        <div className="relative z-10 -mt-6 grid grid-cols-3 divide-x divide-line rounded-2xl bg-white py-4 shadow-sm ring-1 ring-black/5">
+        <div className="relative z-10 -mt-6 grid grid-cols-3 divide-x divide-line rounded-2xl bg-card py-4 shadow-sm ring-1 ring-black/5">
           <Stat icon={Heart} value={savedEvents.length} label="Saved" />
           <Stat icon={CalendarCheck} value={attendingEvents.length} label="Attending" />
           <Stat icon={MessagesSquare} value={chatsCount} label="Chats" />
@@ -202,7 +202,7 @@ export function Profile() {
         {/* Membership */}
         <section className="mt-6">
           {isPremium ? (
-            <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+            <div className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-cat-adventure/10 text-cat-adventure">
                 <ShieldCheck className="h-6 w-6" strokeWidth={1.75} />
               </span>
@@ -266,7 +266,7 @@ export function Profile() {
         {/* Settings */}
         <section className="mt-7">
           <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted">Settings</h2>
-          <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+          <div className="overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-black/5">
             <SettingRow
               icon={Bell}
               label="Notifications"
@@ -325,7 +325,7 @@ function Switch({ on }: { on: boolean }) {
     >
       <span
         className={cn(
-          "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all",
+          "absolute top-0.5 h-5 w-5 rounded-full bg-card shadow transition-all",
           on ? "left-[1.125rem]" : "left-0.5",
         )}
       />

@@ -22,7 +22,7 @@ export function SearchBar({
   return (
     <div
       className={cn(
-        "flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 shadow-xl shadow-black/10 ring-1 ring-black/5",
+        "flex items-center gap-3 rounded-2xl bg-card px-4 py-3.5 shadow-xl shadow-black/10 ring-1 ring-black/5",
         className,
       )}
     >

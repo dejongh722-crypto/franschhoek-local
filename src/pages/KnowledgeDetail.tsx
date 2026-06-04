@@ -99,7 +99,7 @@ export function KnowledgeDetail() {
 
             {/* Insider tips */}
             {post.tips && post.tips.length > 0 && (
-              <div className="mt-7 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+              <div className="mt-7 rounded-2xl bg-card p-5 shadow-sm ring-1 ring-black/5">
                 <div className="flex items-center gap-2 text-wine">
                   <Lightbulb className="h-4 w-4" strokeWidth={2} />
                   <h2 className="font-display text-base font-semibold">Insider tips</h2>

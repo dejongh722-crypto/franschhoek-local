@@ -26,7 +26,7 @@ export function PromoPopup() {
 
   return (
     <div className="fixed inset-0 z-[90] grid place-items-end bg-black/40 p-4 backdrop-blur-sm sm:place-items-center">
-      <div className="animate-rise w-full max-w-sm overflow-hidden rounded-3xl bg-white shadow-2xl">
+      <div className="animate-rise w-full max-w-sm overflow-hidden rounded-3xl bg-card shadow-2xl">
         <div className="relative">
           {promo.image ? (
             <img src={promo.image} alt="" className="h-36 w-full object-cover" />

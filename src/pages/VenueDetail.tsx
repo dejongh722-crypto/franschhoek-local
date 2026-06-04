@@ -88,7 +88,7 @@ export function VenueDetail() {
 
         {venue.address && (
           <div className="mt-4 flex items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-wine shadow-sm ring-1 ring-black/5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-black/5">
               <MapPin className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 text-sm font-medium text-ink">{venue.address}</div>
@@ -114,7 +114,7 @@ export function VenueDetail() {
           {venue.website && (
             <button
               onClick={openWebsite}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-white py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
             >
               <Globe className="h-4 w-4 text-wine" strokeWidth={2} />
               Visit website
@@ -123,7 +123,7 @@ export function VenueDetail() {
           {venue.phone && (
             <a
               href={`tel:${venue.phone}`}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-white py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-card py-3 text-sm font-semibold text-ink transition-colors hover:bg-black/[0.02]"
             >
               <Phone className="h-4 w-4 text-wine" strokeWidth={2} />
               {venue.phone}

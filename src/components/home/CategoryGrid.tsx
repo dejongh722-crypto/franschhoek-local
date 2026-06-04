@@ -71,7 +71,7 @@ export function CategoryGrid({ selectable = false, selected = null, onSelect }: 
               </span>
               {isActive && (
                 <span
-                  className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-white shadow ring-1 ring-black/5"
+                  className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-card shadow ring-1 ring-black/5"
                   style={{ color }}
                 >
                   <Check className="h-3 w-3" strokeWidth={3} />

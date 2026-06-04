@@ -66,7 +66,7 @@ export function Community() {
             {/* Ask a question — help assistant */}
             <button
               onClick={() => navigate("/community/ask")}
-              className="flex w-full items-center gap-3 rounded-2xl bg-white p-4 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+              className="flex w-full items-center gap-3 rounded-2xl bg-card p-4 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
             >
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-wine/10 text-wine">
                 <Bot className="h-6 w-6" strokeWidth={1.75} />
@@ -101,7 +101,7 @@ export function Community() {
                     <button
                       key={event.id}
                       onClick={() => navigate(`/community/${event.id}`)}
-                      className="flex w-full items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+                      className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
                     >
                       <img src={event.image} alt={event.title} className="h-14 w-14 shrink-0 rounded-xl object-cover" />
                       <div className="min-w-0 flex-1">
@@ -134,7 +134,7 @@ function GroupCard({ group }: { group: CommunityGroup }) {
       href={group.inviteUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 rounded-2xl bg-white p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="flex items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
     >
       <span
         className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-white"
@@ -161,7 +161,7 @@ function GroupCard({ group }: { group: CommunityGroup }) {
 function Gate({ onUpgrade }: { onUpgrade: () => void }) {
   return (
     <div className="py-1">
-      <div className="mx-auto max-w-sm rounded-3xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
+      <div className="mx-auto max-w-sm rounded-3xl bg-card p-6 text-center shadow-sm ring-1 ring-black/5">
         <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-wine/10 text-wine">
           <Lock className="h-6 w-6" strokeWidth={1.75} />
         </span>
@@ -193,7 +193,7 @@ function Steps({ onBrowse }: { onBrowse: () => void }) {
     { n: "3", text: "Its chat appears here", hint: "Open it and start chatting." },
   ];
   return (
-    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+    <div className="rounded-2xl bg-card p-5 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-5 w-5 text-wine" strokeWidth={1.75} />
         <h3 className="font-semibold text-ink">How event chats work</h3>

@@ -51,7 +51,7 @@ export function ImageField({
           {busy ? "Uploading…" : "Upload photo"}
         </button>
       </div>
-      <label className="flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-sm ring-1 ring-black/10">
+      <label className="flex items-center gap-2 rounded-xl bg-card px-3 py-2 text-sm ring-1 ring-black/10">
         <Link2 className="h-4 w-4 shrink-0 text-muted" strokeWidth={1.75} />
         <input
           value={value}

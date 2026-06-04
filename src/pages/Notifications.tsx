@@ -63,7 +63,7 @@ export function Notifications() {
                   onClick={() => open(n.id, n.link)}
                   className={cn(
                     "flex w-full items-start gap-3 rounded-2xl p-3.5 text-left ring-1 transition-colors",
-                    read ? "bg-white ring-black/5" : "bg-wine/[0.04] ring-wine/15",
+                    read ? "bg-card ring-black/5" : "bg-wine/[0.04] ring-wine/15",
                   )}
                 >
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-wine/10 text-wine">

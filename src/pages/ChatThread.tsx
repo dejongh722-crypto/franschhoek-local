@@ -259,7 +259,7 @@ export function ChatThread() {
                     {active && (
                       <div
                         className={cn(
-                          "absolute -top-11 z-20 flex animate-popin items-center gap-0.5 rounded-full bg-white p-1 shadow-lg ring-1 ring-black/10",
+                          "absolute -top-11 z-20 flex animate-popin items-center gap-0.5 rounded-full bg-card p-1 shadow-lg ring-1 ring-black/10",
                           mine ? "right-0" : "left-0",
                         )}
                       >
@@ -294,7 +294,7 @@ export function ChatThread() {
                           ? "rounded-br-md bg-wine text-white"
                           : isHost
                             ? "rounded-bl-md bg-cta/10 text-ink ring-1 ring-cta/30"
-                            : "rounded-bl-md bg-white text-ink shadow-sm ring-1 ring-black/5",
+                            : "rounded-bl-md bg-card text-ink shadow-sm ring-1 ring-black/5",
                       )}
                     >
                       {/* Quoted reply */}
@@ -329,7 +329,7 @@ export function ChatThread() {
                               onClick={() => toggleReaction(m.id, emoji, m.reactions)}
                               className={cn(
                                 "flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[11px] font-medium ring-1 transition-colors",
-                                reacted ? "bg-wine/10 text-wine ring-wine/30" : "bg-white text-muted ring-black/5",
+                                reacted ? "bg-wine/10 text-wine ring-wine/30" : "bg-card text-muted ring-black/5",
                               )}
                             >
                               <span>{emoji}</span>
@@ -353,7 +353,7 @@ export function ChatThread() {
                 >
                   {initials(ATTENDEES[0].name)}
                 </span>
-                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm ring-1 ring-black/5">
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-card px-4 py-3 shadow-sm ring-1 ring-black/5">
                   {[0, 0.2, 0.4].map((d) => (
                     <span
                       key={d}
@@ -377,7 +377,7 @@ export function ChatThread() {
               <button
                 key={q}
                 onClick={() => submit(q)}
-                className="shrink-0 rounded-full border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-wine/40"
+                className="shrink-0 rounded-full border border-line bg-card px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-wine/40"
               >
                 {q}
               </button>
@@ -385,7 +385,7 @@ export function ChatThread() {
           </div>
 
           {/* Composer */}
-          <div className="border-t border-line bg-white px-3 py-2.5 pb-[calc(env(safe-area-inset-bottom)+0.6rem)]">
+          <div className="border-t border-line bg-card px-3 py-2.5 pb-[calc(env(safe-area-inset-bottom)+0.6rem)]">
             {replyTo && (
               <div className="mb-2 flex items-center gap-2 rounded-xl bg-sand px-3 py-2">
                 <Reply className="h-3.5 w-3.5 shrink-0 text-wine" strokeWidth={2} />

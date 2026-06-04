@@ -118,7 +118,7 @@ export function UpdatePassword() {
 
 function FieldIcon({ icon: Icon, children }: { icon: typeof Lock; children: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3.5 shadow-sm ring-1 ring-black/5">
+    <div className="flex items-center gap-3 rounded-2xl bg-card px-4 py-3.5 shadow-sm ring-1 ring-black/5">
       <Icon className="h-5 w-5 shrink-0 text-muted" strokeWidth={1.75} />
       {children}
     </div>

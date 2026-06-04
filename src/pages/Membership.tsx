@@ -110,7 +110,7 @@ export function Membership() {
         {/* Benefits */}
         <div className="mt-6 space-y-3">
           {benefits.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="flex items-start gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+            <div key={title} className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-sm ring-1 ring-black/5">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-wine/10 text-wine">
                 <Icon className="h-5 w-5" strokeWidth={1.75} />
               </span>
@@ -124,7 +124,7 @@ export function Membership() {
 
         {isPremium ? (
           /* Current member */
-          <div className="mt-7 rounded-3xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
+          <div className="mt-7 rounded-3xl bg-card p-6 text-center shadow-sm ring-1 ring-black/5">
             <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-cat-adventure/10 text-cat-adventure">
               <ShieldCheck className="h-7 w-7" strokeWidth={1.75} />
             </span>
@@ -157,7 +157,7 @@ export function Membership() {
                     key={p.id}
                     onClick={() => setSelected(p.id)}
                     className={cn(
-                      "relative rounded-2xl border-2 bg-white p-4 text-left transition-colors",
+                      "relative rounded-2xl border-2 bg-card p-4 text-left transition-colors",
                       active ? "border-wine" : "border-line",
                     )}
                   >

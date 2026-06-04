@@ -12,7 +12,7 @@ export function EventCard({ event }: { event: AppEvent }) {
   return (
     <button
       onClick={() => navigate(`/events/${event.id}`)}
-      className="w-60 shrink-0 snap-start overflow-hidden rounded-2xl bg-white text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.98]"
+      className="w-60 shrink-0 snap-start overflow-hidden rounded-2xl bg-card text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.98]"
     >
       <div className="relative h-32">
         <img

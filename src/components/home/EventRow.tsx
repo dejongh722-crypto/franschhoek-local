@@ -10,7 +10,7 @@ export function EventRow({ event }: { event: AppEvent }) {
   return (
     <button
       onClick={() => navigate(`/events/${event.id}`)}
-      className="flex w-full items-center gap-3 rounded-2xl bg-white p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
+      className="flex w-full items-center gap-3 rounded-2xl bg-card p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-transform active:scale-[0.99]"
     >
       <img
         src={event.image}

@@ -131,7 +131,7 @@ export function EventDetail() {
 
         {/* Community chat — only for events that have one */}
         {event.hasChat && (
-          <div className="mt-7 overflow-hidden rounded-2xl border border-line bg-white">
+          <div className="mt-7 overflow-hidden rounded-2xl border border-line bg-card">
             <div className="flex items-center gap-3 p-4">
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-wine/10 text-wine">
                 <MessagesSquare className="h-5 w-5" strokeWidth={1.75} />
@@ -227,7 +227,7 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-wine shadow-sm ring-1 ring-black/5">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-card text-wine shadow-sm ring-1 ring-black/5">
         <Icon className="h-5 w-5" strokeWidth={1.75} />
       </span>
       <div className="min-w-0">
