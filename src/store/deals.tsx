@@ -69,7 +69,15 @@ function slugId(title: string): string {
   return `${base}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
-const NOT_SAVED = "Couldn't save — your account needs admin access (profiles.is_admin = true).";
+const NOT_ADMIN = "Couldn't save — your account needs admin access (profiles.is_admin = true).";
+const NOT_SIGNED_IN = "You're not signed in. Sign in with your admin account to manage content.";
+
+/** Why a write affected 0 rows: not signed in, or signed in without admin rights. */
+async function blockedReason(): Promise<string> {
+  if (!supabase) return NOT_ADMIN;
+  const { data } = await supabase.auth.getSession();
+  return data.session ? NOT_ADMIN : NOT_SIGNED_IN;
+}
 
 export function DealsProvider({ children }: { children: ReactNode }) {
   const cloud = Boolean(supabase);
@@ -104,7 +112,7 @@ export function DealsProvider({ children }: { children: ReactNode }) {
       if (supabase) {
         const { data, error } = await supabase.from("deals").insert(toRow(deal)).select();
         if (error) return { error: error.message };
-        if (!data || data.length === 0) return { error: NOT_SAVED };
+        if (!data || data.length === 0) return { error: await blockedReason() };
         await fetchAll();
       } else {
         setDeals((prev) => [deal, ...prev]);
@@ -119,7 +127,7 @@ export function DealsProvider({ children }: { children: ReactNode }) {
       if (supabase) {
         const { data, error } = await supabase.from("deals").delete().eq("id", id).select();
         if (error) return { error: error.message };
-        if (!data || data.length === 0) return { error: NOT_SAVED };
+        if (!data || data.length === 0) return { error: await blockedReason() };
         await fetchAll();
       } else {
         setDeals((prev) => prev.filter((d) => d.id !== id));

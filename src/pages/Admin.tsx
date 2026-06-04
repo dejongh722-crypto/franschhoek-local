@@ -25,6 +25,8 @@ import {
   MessagesSquare,
   MapPinned,
   BookOpen,
+  LogIn,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 import { analytics, monthlyRevenue, zar } from "@/data/analytics";
@@ -42,8 +44,9 @@ import { useKnowledge } from "@/store/knowledge";
 import { venueImage } from "@/data/venues";
 import { ImageField } from "@/components/admin/ImageField";
 import { useCommunityGroups } from "@/store/communityGroups";
+import { useAuth } from "@/store/auth";
 import { useToast } from "@/store/toast";
-import { supabase, type ProfileRow } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured, type ProfileRow } from "@/lib/supabase";
 import {
   fetchPromoMetrics,
   conversionRate,
@@ -143,6 +146,11 @@ function promoStatus(p: Promotion): { label: string; tone: "live" | "scheduled" 
 export function Admin() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user, isAdmin } = useAuth();
+  // Content changes write to Supabase under admin-only RLS, so they only work
+  // when signed in as an admin. The dashboard is viewable in dev (ADMIN_ENABLED)
+  // even when signed out, which would otherwise make writes fail silently.
+  const cannotWrite = isSupabaseConfigured && (!user || !isAdmin);
   const { promotions, addPromotion, updatePromotion, removePromotion, toggleActive } = usePromotions();
   const { events } = useEvents();
   const { deals } = useDeals();
@@ -278,6 +286,32 @@ export function Admin() {
       </header>
 
       <div className="space-y-7 px-5 py-5">
+        {/* Writes need an authenticated admin — warn before they silently fail. */}
+        {cannotWrite && (
+          <div className="flex items-start gap-3 rounded-2xl border border-cta/30 bg-cta/10 p-4">
+            <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-cta" strokeWidth={2} />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-ink">
+                {user ? "This account isn't an admin" : "You're not signed in"}
+              </p>
+              <p className="mt-0.5 text-xs text-muted">
+                {user
+                  ? "Adding, editing or deleting content needs an admin account (profiles.is_admin = true)."
+                  : "Sign in with your admin account to add, edit or delete events, deals and places."}
+              </p>
+              {!user && (
+                <button
+                  onClick={() => navigate("/signin")}
+                  className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-wine px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-wine-soft"
+                >
+                  <LogIn className="h-3.5 w-3.5" strokeWidth={2} />
+                  Sign in
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Key metrics */}
         <section className="grid grid-cols-2 gap-3">
           <Metric icon={Users} label="Total users" value={analytics.totalUsers.toLocaleString("en-ZA")} sub={`+${analytics.newUsersThisMonth} this month`} />
