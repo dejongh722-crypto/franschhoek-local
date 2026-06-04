@@ -21,11 +21,18 @@
 /** @type {Source[]} */
 export const SOURCES = [
   // Venues are curated and admin-managed (real photos + descriptions), so the
-  // scraper focuses on EVENTS — festivals & happenings. It only keeps upcoming
-  // events and never touches venues, so it won't overwrite curated/admin edits.
-  // Add more event/calendar pages here as you find them.
-  { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event"] },
-  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["event"] },
+  // scraper never writes venues here. It focuses on EVENTS (festivals &
+  // happenings, upcoming only) and DEALS (specials/offers) found on these pages.
+  //
+  // NOTE: Most real deals are pulled automatically from each curated venue's OWN
+  // website (their "specials"/"offers" page) by the venue-deal scan in
+  // scraper.mjs — you don't need to list those here. Add a page below only when
+  // a directory/aggregator publishes offers you also want scanned.
+  { url: "https://www.franschhoek.org.za/events/", category: "wineries", kinds: ["event", "deal"] },
+  { url: "https://www.franschhoek.org.za/things-to-do/", category: "adventure", kinds: ["event", "deal"] },
+
+  // EXAMPLE specials/deals source (verify it loads & you're permitted before relying on it):
+  // { url: "https://www.franschhoek.org.za/specials/", category: "restaurants", kinds: ["deal"] },
 ];
 
 /**

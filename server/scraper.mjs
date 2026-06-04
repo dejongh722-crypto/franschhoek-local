@@ -4,6 +4,10 @@
 // public WhatsApp community-group invite links), normalizes them and upserts them
 // into Supabase. Auto-publishes: scraped rows go straight into the live tables.
 //
+// Deals also come from each curated venue's OWN website: scrapeVenueDeals() scans
+// every venue's site for a specials/offers page and AI-extracts the offers that
+// place is currently running (Claude is only called when a page looks offer-like).
+//
 // Run:        npm run scrape          (loads .env)
 // Schedule:   .github/workflows/scrape.yml runs it every 4 hours.
 //
@@ -96,6 +100,16 @@ function isPastEvent(iso) {
   if (!iso) return false;
   const last = String(iso).split(/\/|\s–\s|\s-\s|\sto\s/i).pop().trim();
   const d = new Date(last);
+  if (Number.isNaN(d.getTime())) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return d.getTime() < today.getTime();
+}
+
+/** True if a deal's validity date has passed. Unknown/empty dates are kept. */
+function isExpiredDeal(iso) {
+  if (!iso) return false;
+  const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return false;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -316,6 +330,24 @@ ${text}`;
   }
 }
 
+/** Normalize an AI-extracted deal into a `deals` table row. */
+function dealRow(d, sourceUrl, category, now) {
+  return {
+    id: stableId("del", sourceUrl, d.title),
+    title: d.title,
+    venue: d.venue || "",
+    category_slug: d.categorySlug || category,
+    discount: d.discount || "OFFER",
+    description: d.description || "",
+    code: d.code || "DEAL",
+    valid_until: d.validUntil || new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
+    image: d.image || "",
+    source: "scraper",
+    source_url: sourceUrl,
+    updated_at: now,
+  };
+}
+
 function extractWhatsAppGroups(html, category) {
   const links = [...html.matchAll(/https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+/g)].map((m) => m[0]);
   return [...new Set(links)].map((url) => ({ invite_url: url, categorySlug: category }));
@@ -418,20 +450,9 @@ async function processSource(src, acc) {
   }
   for (const d of cap(deals)) {
     if (!d.title) continue;
-    acc.deals.set(stableId("del", url, d.title), {
-      id: stableId("del", url, d.title),
-      title: d.title,
-      venue: d.venue || "",
-      category_slug: d.categorySlug || category,
-      discount: d.discount || "OFFER",
-      description: d.description || "",
-      code: d.code || "DEAL",
-      valid_until: d.validUntil || new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10),
-      image: d.image || "",
-      source: "scraper",
-      source_url: url,
-      updated_at: now,
-    });
+    if (isExpiredDeal(d.validUntil)) continue; // only keep currently-valid offers
+    const row = dealRow(d, url, category, now);
+    acc.deals.set(row.id, row);
   }
   for (const g of groups) {
     acc.groups.set(g.invite_url, {
@@ -447,6 +468,99 @@ async function processSource(src, acc) {
   console.log(
     `  ✓ ${url} → ${venues.length} venues, ${events.length} events, ${deals.length} deals, ${groups.length} groups`,
   );
+}
+
+// ── Venue-website deals pass ──────────────────────────────────────────
+// Scrapes deals straight from the curated venues' OWN websites — i.e. the
+// specials/offers each place is actually running. For every venue with a
+// website, we look for a specials page and AI-extract any genuine offers,
+// attributing them to that venue. Claude is only called when the page looks
+// like it has specials (keyword guard) so cost stays low.
+
+const SPECIALS_HINT = /special|offer|deal|promo|discount|package|voucher|what'?s[-\s]?on/i;
+
+/** Find a likely specials/offers page linked from a venue homepage. */
+function findSpecialsLink(html, baseUrl) {
+  for (const m of html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi)) {
+    const href = m[1];
+    const text = m[2].replace(/<[^>]+>/g, " ");
+    if (SPECIALS_HINT.test(href) || SPECIALS_HINT.test(text)) {
+      const u = absUrl(href, baseUrl);
+      if (u && /^https?:/i.test(u)) return u;
+    }
+  }
+  return null;
+}
+
+async function scrapeVenueDeals(acc) {
+  if (!anthropic) {
+    console.log("  · venue deal scan skipped (no ANTHROPIC_API_KEY)");
+    return;
+  }
+  const { data: venues, error } = await supabase
+    .from("venues")
+    .select("id, name, category_slug, website")
+    .not("website", "is", null);
+  if (error) {
+    console.warn(`  · couldn't load venues for deal scan: ${error.message}`);
+    return;
+  }
+
+  console.log(`  ▸ scanning ${venues.length} venue sites for current specials…`);
+  const now = new Date().toISOString();
+  let scanned = 0;
+
+  for (const v of venues) {
+    const site = (v.website || "").trim();
+    if (!site || !/^https?:\/\//i.test(site)) continue;
+    try {
+      if (!(await robotsAllows(site))) continue;
+      const res = await fetchWithTimeout(site);
+      if (!res.ok) continue;
+      const homeHtml = await res.text();
+
+      // Prefer a dedicated specials page; otherwise scan the homepage only if it
+      // mentions specials (keeps us from calling Claude on every site).
+      let target = site;
+      let html = homeHtml;
+      const specialsUrl = findSpecialsLink(homeHtml, site);
+      if (specialsUrl && specialsUrl !== site && (await robotsAllows(specialsUrl))) {
+        const r2 = await fetchWithTimeout(specialsUrl);
+        if (r2.ok) {
+          target = specialsUrl;
+          html = await r2.text();
+          await sleep(POLITE_DELAY_MS);
+        }
+      }
+
+      const text = htmlToText(html);
+      if (!specialsUrl && !SPECIALS_HINT.test(text)) continue; // nothing offer-like → skip (no AI cost)
+
+      const { ogImage, candidates } = extractImages(html, target);
+      const ai = await aiExtract(v.category_slug, target, text, candidates);
+      scanned++;
+
+      let kept = 0;
+      for (const d of ai.deals.slice(0, MAX_ITEMS_PER_SOURCE)) {
+        if (!d.title) continue;
+        if (isExpiredDeal(d.validUntil)) continue;
+        const row = dealRow(
+          { ...d, venue: d.venue || v.name, categorySlug: v.category_slug },
+          target,
+          v.category_slug,
+          now,
+        );
+        if (!row.image && ogImage) row.image = ogImage;
+        acc.deals.set(row.id, row);
+        kept++;
+      }
+      if (kept) console.log(`    ✓ ${v.name}: ${kept} deal(s)`);
+      await sleep(POLITE_DELAY_MS);
+    } catch (e) {
+      console.warn(`    · ${v.name}: ${e?.message ?? e}`);
+    }
+  }
+  console.log(`  ▸ venue deal scan done (${scanned} site(s) had offer content)`);
 }
 
 async function upsert(table, rows) {
@@ -474,6 +588,15 @@ async function main() {
       errors.push(msg);
     }
     await sleep(POLITE_DELAY_MS);
+  }
+
+  // Pull current specials straight from the curated venues' own websites.
+  try {
+    await scrapeVenueDeals(acc);
+  } catch (e) {
+    const msg = `venue-deal-scan: ${e?.message ?? e}`;
+    console.warn(`  ✗ ${msg}`);
+    errors.push(msg);
   }
 
   const venues = await upsert("venues", [...acc.venues.values()]);
