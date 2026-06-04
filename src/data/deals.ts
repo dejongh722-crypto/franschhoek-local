@@ -112,6 +112,13 @@ export function daysUntil(iso: string): number {
   return Math.round((startOfDay(target) - startOfDay(new Date())) / 86_400_000);
 }
 
+/** True when a deal has a known end date that has already passed.
+ *  Deals without an end date (book-direct offers) are never "expired". */
+export function isDealExpired(iso: string): boolean {
+  const d = daysUntil(iso);
+  return Number.isFinite(d) && d < 0;
+}
+
 /** Short urgency label, e.g. "Ends today", "1 day left", "12 days left".
  *  Empty string when there's no known end date. */
 export function daysLeftLabel(iso: string): string {

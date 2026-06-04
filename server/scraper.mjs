@@ -610,6 +610,38 @@ async function pruneSuppressed(acc) {
   if (removed) console.log(`  ▸ skipped ${removed} admin-deleted item(s)`);
 }
 
+/** Delete content that has passed: events whose date is in the past and deals
+ *  whose validity date has expired (book-direct deals with no end date are kept).
+ *  Keeps the tables fresh so re-runs surface current events/deals. */
+async function cleanupExpired() {
+  let events = 0;
+  let deals = 0;
+
+  const { data: evs, error: e1 } = await supabase.from("events").select("id, date");
+  if (e1) console.warn(`  · cleanup: couldn't read events: ${e1.message}`);
+  else {
+    const ids = (evs || []).filter((e) => isPastEvent(e.date)).map((e) => e.id);
+    if (ids.length) {
+      const { error } = await supabase.from("events").delete().in("id", ids);
+      if (error) console.warn(`  · cleanup: deleting past events failed: ${error.message}`);
+      else events = ids.length;
+    }
+  }
+
+  const { data: dls, error: e2 } = await supabase.from("deals").select("id, valid_until");
+  if (e2) console.warn(`  · cleanup: couldn't read deals: ${e2.message}`);
+  else {
+    const ids = (dls || []).filter((d) => isExpiredDeal(d.valid_until)).map((d) => d.id);
+    if (ids.length) {
+      const { error } = await supabase.from("deals").delete().in("id", ids);
+      if (error) console.warn(`  · cleanup: deleting expired deals failed: ${error.message}`);
+      else deals = ids.length;
+    }
+  }
+
+  if (events || deals) console.log(`  ▸ removed ${events} past event(s), ${deals} expired deal(s)`);
+}
+
 async function upsert(table, rows) {
   if (rows.length === 0) return 0;
   const { error } = await supabase.from(table).upsert(rows, { onConflict: "id" });
@@ -648,6 +680,9 @@ async function main() {
 
   // Respect admin deletions: never re-add anything an admin has removed.
   await pruneSuppressed(acc);
+
+  // Drop anything that has already happened / expired so the tables stay fresh.
+  await cleanupExpired();
 
   const venues = await upsert("venues", [...acc.venues.values()]);
   const events = await upsert("events", [...acc.events.values()]);

@@ -6,7 +6,7 @@ import { CategoryGrid } from "@/components/home/CategoryGrid";
 import { DealTicket } from "@/components/deals/DealTicket";
 import { DealsFeatured } from "@/components/deals/DealsFeatured";
 import { DealsLocked } from "@/components/deals/DealsLocked";
-import { daysUntil } from "@/data/deals";
+import { daysUntil, isDealExpired } from "@/data/deals";
 import { useDeals } from "@/store/deals";
 import { useMembership } from "@/store/membership";
 
@@ -26,16 +26,19 @@ export function Deals() {
     setSearchParams(next, { replace: true });
   };
 
-  const featured = deals.find((d) => d.id === FEATURED_ID) ?? deals[0];
+  // Hide deals whose end date has passed (until the scraper deletes them).
+  const live = useMemo(() => deals.filter((d) => !isDealExpired(d.validUntil)), [deals]);
+
+  const featured = live.find((d) => d.id === FEATURED_ID) ?? live[0];
   const isDefaultView = !selectedCategory && !query.trim();
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return deals
+    return live
       .filter((d) => (selectedCategory ? d.categorySlug === selectedCategory : true))
       .filter((d) => (q ? d.title.toLowerCase().includes(q) || d.venue.toLowerCase().includes(q) : true))
       .sort((a, b) => daysUntil(a.validUntil) - daysUntil(b.validUntil));
-  }, [deals, selectedCategory, query]);
+  }, [live, selectedCategory, query]);
 
   return (
     <div className="pb-6">
