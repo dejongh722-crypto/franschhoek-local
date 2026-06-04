@@ -32,7 +32,7 @@
    Flips the semantic surface/text tokens (and lightens the wine accents so
    icons/labels stay legible on dark cards). Activated by the `.dark` class on
    <html>, toggled from Profile → Settings and persisted by the theme store. */
-.dark {
+:root.dark {
   color-scheme: dark;
 
   /* Warm, dark wine-country surfaces */
