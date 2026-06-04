@@ -12,6 +12,48 @@ import { trackSignupAttribution } from "@/lib/promoMetrics";
 
 type ProfilePatch = Partial<Pick<ProfileRow, "full_name" | "avatar_url" | "tier">>;
 
+// New members are auto-joined to the General Community: once their account is
+// active (which may be after email confirmation), we post a one-time "joined"
+// message to the shared "general" room so they land in the conversation with
+// everyone. The pending intent is stored locally until a session exists.
+const PENDING_WELCOME_KEY = "fl.pendingWelcome.v1";
+
+async function welcomeToGeneral(userId: string, name: string) {
+  if (!supabase) return;
+  // Don't double-post if this user already has a join message in the room.
+  const { data: existing } = await supabase
+    .from("messages")
+    .select("id")
+    .eq("room", "general")
+    .eq("author_id", userId)
+    .limit(1);
+  if (existing && existing.length > 0) return;
+  await supabase.from("messages").insert({
+    room: "general",
+    author_id: userId,
+    author_name: name || "New member",
+    body: "👋 Just joined Franschhoek Local — hi everyone!",
+  });
+}
+
+/** If a just-signed-up user now has a session, post their welcome once. */
+async function flushPendingWelcome(userId: string) {
+  let pending: { id: string; name: string } | null = null;
+  try {
+    const raw = localStorage.getItem(PENDING_WELCOME_KEY);
+    pending = raw ? JSON.parse(raw) : null;
+  } catch {
+    /* ignore */
+  }
+  if (!pending || pending.id !== userId) return;
+  try {
+    localStorage.removeItem(PENDING_WELCOME_KEY);
+  } catch {
+    /* ignore */
+  }
+  await welcomeToGeneral(userId, pending.name);
+}
+
 interface AuthContextValue {
   configured: boolean;
   loading: boolean;
@@ -54,8 +96,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     function applySession(session: Session | null) {
       setUser(session?.user ?? null);
-      if (session?.user) void loadProfile(session.user.id);
-      else setProfile(null);
+      if (session?.user) {
+        void loadProfile(session.user.id);
+        void flushPendingWelcome(session.user.id); // auto-join General Community
+      } else setProfile(null);
     }
 
     return () => sub.subscription.unsubscribe();
@@ -75,9 +119,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           password,
           options: { data: { full_name: fullName } },
         });
+        if (error) return { error: error.message };
         // Credit the promotion this user last clicked (if any) toward sign-ups.
-        if (!error) trackSignupAttribution(data.user?.id);
-        return error ? { error: error.message } : {};
+        trackSignupAttribution(data.user?.id);
+        // Queue the auto-join welcome to the General Community. It's posted as
+        // soon as a session exists — immediately if email confirmation is off,
+        // otherwise on their first sign-in after confirming.
+        if (data.user) {
+          try {
+            localStorage.setItem(
+              PENDING_WELCOME_KEY,
+              JSON.stringify({ id: data.user.id, name: fullName }),
+            );
+          } catch {
+            /* ignore */
+          }
+          if (data.session) void flushPendingWelcome(data.user.id);
+        }
+        return {};
       },
       async signIn(email, password) {
         if (!supabase) return { error: "Supabase is not configured." };
