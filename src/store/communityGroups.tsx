@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { suppress } from "@/lib/suppress";
 import type { WriteResult } from "@/store/promotions";
 
 export interface CommunityGroup {
@@ -117,6 +118,7 @@ export function CommunityGroupsProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.from("community_groups").delete().eq("id", id).select();
         if (error) return { error: error.message };
         if (!data || data.length === 0) return { error: NOT_SAVED };
+        await suppress("group", id); // don't let the scraper re-add it
         await fetchAll();
       } else {
         setGroups((prev) => prev.filter((g) => g.id !== id));

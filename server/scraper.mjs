@@ -582,6 +582,34 @@ async function scrapeVenueDeals(acc) {
   console.log(`  ▸ venue deal scan done (${scanned} site(s) had offer content)`);
 }
 
+/** Drop anything an admin has deleted (suppressed_content) from the accumulator,
+ *  so a re-run never resurrects it. Matches on each row's id by kind. */
+async function pruneSuppressed(acc) {
+  const { data, error } = await supabase.from("suppressed_content").select("id, kind");
+  if (error) {
+    console.warn(`  · couldn't read suppressed_content: ${error.message}`);
+    return;
+  }
+  const blocked = new Set((data || []).map((s) => `${s.kind}:${s.id}`));
+  if (blocked.size === 0) return;
+  const prune = (map, kind) => {
+    let n = 0;
+    for (const [key, row] of map) {
+      if (blocked.has(`${kind}:${row.id}`)) {
+        map.delete(key);
+        n++;
+      }
+    }
+    return n;
+  };
+  const removed =
+    prune(acc.venues, "venue") +
+    prune(acc.events, "event") +
+    prune(acc.deals, "deal") +
+    prune(acc.groups, "group");
+  if (removed) console.log(`  ▸ skipped ${removed} admin-deleted item(s)`);
+}
+
 async function upsert(table, rows) {
   if (rows.length === 0) return 0;
   const { error } = await supabase.from(table).upsert(rows, { onConflict: "id" });
@@ -617,6 +645,9 @@ async function main() {
     console.warn(`  ✗ ${msg}`);
     errors.push(msg);
   }
+
+  // Respect admin deletions: never re-add anything an admin has removed.
+  await pruneSuppressed(acc);
 
   const venues = await upsert("venues", [...acc.venues.values()]);
   const events = await upsert("events", [...acc.events.values()]);

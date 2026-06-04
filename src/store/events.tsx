@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { suppress } from "@/lib/suppress";
 import { events as seedEvents, byDate, isUpcoming, type AppEvent } from "@/data/events";
 import { categoryImage } from "@/data/categories";
 import type { WriteResult } from "@/store/promotions";
@@ -145,6 +146,7 @@ export function EventsProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.from("events").delete().eq("id", id).select();
         if (error) return { error: error.message };
         if (!data || data.length === 0) return { error: NOT_SAVED };
+        await suppress("event", id); // don't let the scraper re-add it
         await fetchAll();
       } else {
         setEvents((prev) => prev.filter((e) => e.id !== id));

@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { suppress } from "@/lib/suppress";
 import { deals as seedDeals, type Deal } from "@/data/deals";
 import type { WriteResult } from "@/store/promotions";
 
@@ -128,6 +129,7 @@ export function DealsProvider({ children }: { children: ReactNode }) {
         const { data, error } = await supabase.from("deals").delete().eq("id", id).select();
         if (error) return { error: error.message };
         if (!data || data.length === 0) return { error: await blockedReason() };
+        await suppress("deal", id); // don't let the scraper re-add it
         await fetchAll();
       } else {
         setDeals((prev) => prev.filter((d) => d.id !== id));
